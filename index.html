@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="EasyPeasy : JAX-RS style REST Client for .Net" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>EasyPeasy</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mattchanner/EasyPeasy">View on GitHub</a>
+
+          <h1 id="project_title">EasyPeasy</h1>
+          <h2 id="project_tagline">JAX-RS style REST Client for .Net</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mattchanner/EasyPeasy/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mattchanner/EasyPeasy/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Welcome to EasyPeasy.</h3>
+
+<p>EasyPeasy is a .NET REST client that takes the JAX-RS annotation based approach to describe a RESTful service, where interfaces are used to describe the service endpoints.</p>
+
+<p>A number of attributes are used to decorate both the interface and the method definitions, and from this, EasyPeasy will generate an implementation of the client for you!</p>
+
+<h3>Example</h3>
+
+<pre><code>[Path("/services/customers"), 
+ Consumes("application/json"), 
+ Produces("application/json")] 
+public interface ICustomerService
+{
+    // Built in support for async requests
+    [GET, Path("/{name}")]
+    Task&lt;Customer&gt; GetCustomerAsync(
+        [PathParam("name")] string name);
+
+    // Synchronous equivalent
+    [GET, Path("/{name}")]
+    Customer GetCustomer(
+        [PathParam("name")] string name);
+
+    [DELETE, Path("/{name}")]
+    void DeleteCustomer(
+        [PathParam("name")] string name, 
+        [QueryParam("q")] bool q);
+
+    [DELETE, Path("/{name}")]
+    Task DeleteCustomerAsync(
+        [PathParam("name")] string name,
+        [QueryParam("q")] bool q);
+}
+</code></pre>
+
+<p>The proxy type can then be created simply by calling:</p>
+
+<pre><code>ICustomerService client = 
+    ServiceProxy.CreateProxy&lt;ICustomerService&gt;(
+        new Uri("http://server.com"));
+Customer customer = client.GetCustomer("My Customer");
+</code></pre>
+
+<h3>The following attributes are supported:</h3>
+
+<ul>
+<li>[Path] - Specifies the relative path for a resource class or method.</li>
+<li>[GET], [PUT], [POST], [DELETE] specify the HTTP request type of a resource.</li>
+<li>[Produces] specifies the response MIME media types.</li>
+<li>[Consumes] specifies the accepted request media types.</li>
+</ul><p>In addition, further attributes to method parameters to pull information out of the request are available.  All the *Param attributes take a key of some form which is used to look up the value required.</p>
+
+<ul>
+<li>[PathParam] binds the parameter to a path segment</li>
+<li>[QueryParam] binds the parameter to the value of an HTTP query parameter</li>
+<li>[HeaderParam] binds the parameter to an HTTP header value.</li>
+</ul><h3>How it works</h3>
+
+<p>The ServiceProxy class uses reflection to scoop up information on the type you give it.  Reflection.Emit is then used to lovingly craft a new class to implement your interface.  The new class extends ServiceClient where most of the work takes place.  </p>
+
+<p>Each implemented method on the interface simply generates a new MethodMetadata object which describes the method based on the method arguments, and the attributes associated to it.</p>
+
+<h3>Task Aware</h3>
+
+<p>Service calls are asynchronous in nature, so it is only natural for methods to be described in this way.  The proxy generator will look for methods that return Tasks and generate the appropriate implementation using async methods.  In fact, non Task based return types still use tasks under the hood, they just block until they return.</p>
+
+<h3>Authors and Contributors</h3>
+
+<p>Currently the project has a single author, Matt Channer (<a href="https://github.com/mattchanner" class="user-mention">@mattchanner</a>).</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">EasyPeasy maintained by <a href="https://github.com/mattchanner">mattchanner</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
