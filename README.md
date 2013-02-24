@@ -63,6 +63,7 @@ The following media types are supported out of the box:
 * text/plain
 * text/html
 * image/png
+* image/gif
 * image/jpeg
 * image/bmp
 * image/tiff (to the extent that TIFF files are supported by the .NET framework)
