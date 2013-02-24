@@ -1,0 +1,62 @@
+﻿// -----------------------------------------------------------------------------
+// <copyright file="Program.cs">
+// 
+//  The MIT License (MIT)
+//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
+// 
+//  Permission is hereby granted, free of charge, to any person obtaining a 
+//  copy of this software and associated documentation files (the “Software”),
+//  to deal in the Software without restriction, including without limitation 
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+//  and/or sell copies of the Software, and to permit persons to whom the 
+//  Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included 
+//  in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//  THE SOFTWARE.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
+using EasyPeasy.Client;
+
+namespace EasyPeasy
+{
+    /// <summary> The program entry point class. </summary>
+    public class Program
+    {
+        /// <summary> The main method. </summary>
+        public static void Main()
+        {
+            // Add to allow communication to sites with self-signed certificates
+            // ServicePointManager.ServerCertificateValidationCallback = ValidationCallback;
+            
+            Uri baseAddress = new Uri("http://server");
+
+            ICredentials credentials = new NetworkCredential("Administrator", "Password");
+
+            IContactService contactService = ServiceProxy.CreateProxy<IContactService>(baseAddress, credentials);
+
+            contactService.CreateContactAsync(new Contact { Address = "Address1", Name = "Joe Bloggs" })
+                    .ContinueWith(task => Console.WriteLine("Contact created"));
+
+            Console.ReadKey();
+        }
+
+        private static bool ValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslpolicyerrors)
+        {
+            return true;
+        }
+    }
+}

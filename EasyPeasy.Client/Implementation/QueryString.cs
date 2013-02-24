@@ -1,0 +1,173 @@
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="QueryString.cs">
+// 
+//  The MIT License (MIT)
+//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
+// 
+//  Permission is hereby granted, free of charge, to any person obtaining a 
+//  copy of this software and associated documentation files (the “Software”),
+//  to deal in the Software without restriction, including without limitation 
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+//  and/or sell copies of the Software, and to permit persons to whom the 
+//  Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included 
+//  in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//  THE SOFTWARE.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+
+namespace EasyPeasy.Client.Implementation
+{
+    /// <summary>
+    /// A simple utility class for constructing query string parameters
+    /// </summary>
+    public class QueryString
+    {
+        /// <summary> The parameters. </summary>
+        private readonly NameValueCollection parameters = new NameValueCollection();
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="QueryString"/> class from being created.
+        /// </summary>
+        private QueryString()
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="QueryString"/> instance
+        /// </summary>
+        /// <returns>
+        /// The <see cref="QueryString"/>.
+        /// </returns>
+        public static QueryString Create()
+        {
+            return new QueryString();
+        }
+
+        /// <summary>
+        /// Adds a new query string parameter
+        /// </summary>
+        /// <param name="paramName">The parameter name</param>
+        /// <param name="paramValue">The parameter value</param>
+        /// <returns>A reference to this instance</returns>
+        /// <exception cref="ArgumentNullException">Raised if <paramref name="paramName" /> is null</exception>
+        /// <exception cref="ArgumentException">Raised if <paramref name="paramName" /> is an empty string</exception>
+        /// <exception cref="DuplicateKeyException">Raised if <paramref name="paramName" /> already exists</exception>
+        public QueryString Add(string paramName, string paramValue)
+        {
+            Ensure.IsNotNullOrEmpty(paramName, "paramName");
+            Ensure.IsNotNullOrEmpty(paramValue, "paramValue");
+
+            if (this.parameters.Get(paramName) != null)
+            {
+                throw new DuplicateKeyException(paramName);
+            }
+
+            this.parameters.Add(paramName, paramValue);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds each item in the sequence to the query string.
+        /// </summary>
+        /// <param name="keysAndValues">The sequence of keys and values to add</param>
+        /// <returns>The current <see cref="QueryString"/> instance</returns>
+        public QueryString AddAll(IEnumerable<Tuple<string, string>> keysAndValues)
+        {
+            foreach (Tuple<string, string> keyAndValue in keysAndValues)
+            {
+                Add(keyAndValue.Item1, keyAndValue.Item2);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new query string parameter
+        /// </summary>
+        /// <param name="paramName">The parameter name</param>
+        /// <param name="paramValue">The parameter value</param>
+        /// <returns>A reference to this instance</returns>
+        /// <exception cref="ArgumentNullException">Raised if <paramref name="paramName" /> is null</exception>
+        /// <exception cref="ArgumentException">Raised if <paramref name="paramName" /> is an empty string</exception>
+        /// <exception cref="DuplicateKeyException">Raised if <paramref name="paramName" /> already exists</exception>
+        public QueryString Add(string paramName, bool paramValue)
+        {
+            Ensure.IsNotNullOrEmpty(paramName, "paramName");
+
+            this.Add(paramName, paramValue.ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
+
+            return this;
+        }
+
+        /// <summary>
+        /// Conditionally adds the parameter value if it is set to a non empty string.
+        /// </summary>
+        /// <param name="paramName"> The parameter name. </param>
+        /// <param name="paramValue"> The parameter value. </param>
+        /// <returns> The <see cref="QueryString"/>. </returns>
+        /// <exception cref="ArgumentNullException">Raised if <paramref name="paramName" /> is null</exception>
+        /// <exception cref="ArgumentException">Raised if <paramref name="paramName" /> is an empty string</exception>
+        /// <exception cref="DuplicateKeyException">Raised if <paramref name="paramName" /> already exists</exception>
+        public QueryString MaybeAdd(string paramName, string paramValue)
+        {
+            Ensure.IsNotNullOrEmpty(paramName, "paramName");
+
+            if (!string.IsNullOrEmpty(paramValue))
+            {
+                this.Add(paramName, paramValue);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Returns a new path containing the provided path, and the query string parameters
+        /// held within the instance
+        /// </summary>
+        /// <param name="path"> The path to use as a the basis for the new path </param>
+        /// <returns>
+        /// The <see cref="string"/> containing the path, and the query string parameters
+        /// </returns>
+        public string AppendToPath(string path)
+        {
+            Ensure.IsNotNullOrEmpty(path, "path");
+
+            if (!path.EndsWith("?"))
+            {
+                path += "?";
+            }
+
+            return path + this;
+        }
+
+        /// <summary>
+        /// Returns a string representation of the query string instance
+        /// </summary>
+        /// <returns>The query string parameters as a name value pair list</returns>
+        public override string ToString()
+        {
+            if (this.parameters.Count == 0) return string.Empty;
+
+            return
+                this.parameters.AllKeys
+                    .Select(key => string.Format("{0}={1}", key, this.parameters[key]))
+                    .Aggregate((s, s1) => string.Format("{0}&{1}", s, s1));
+        }
+    }
+}
