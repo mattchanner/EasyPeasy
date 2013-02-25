@@ -31,6 +31,7 @@ namespace EasyPeasy.Attributes
     /// <summary>
     /// Determines what content type is sent across the wire when making a service request
     /// </summary>
+    [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Method)]
     public class ProducesAttribute : Attribute
     {
         /// <summary> The media type. </summary>

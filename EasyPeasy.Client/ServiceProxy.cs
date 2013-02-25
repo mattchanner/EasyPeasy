@@ -101,6 +101,7 @@ namespace EasyPeasy.Client
         public static TService CreateProxy<TService>(Uri baseUri, ICredentials credentials = null)
         {
             Type serviceType = typeof(TService);
+            
             if (serviceType.IsInterface == false)
                 throw new ArgumentException("TService must be an interface");
 
@@ -118,6 +119,7 @@ namespace EasyPeasy.Client
                 throw new EasyPeasyException("Unable to retrieve default constructor for generated type");
 
             TService service = (TService)ctor.Invoke(Type.EmptyTypes);
+
             IServiceClient serviceClient = (IServiceClient)service;
             serviceClient.BaseUri = baseUri;
             serviceClient.Credentials = credentials;
@@ -173,10 +175,11 @@ namespace EasyPeasy.Client
             {
                 if (isGenericMethod)
                 {
-                    baseMethodHandler =
-                        isGenericMethod
-                            ? baseMethodInfoPrototype.MakeGenericMethod(returnType.GetGenericArguments())
-                            : baseMethodInfoPrototype.MakeGenericMethod(returnType);    
+                    baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType.GetGenericArguments());
+                }
+                else if (returnType != typeof(Task))
+                {
+                    baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType);
                 }
             }
             
@@ -228,10 +231,8 @@ namespace EasyPeasy.Client
 
             Type methodMetaType = typeof(MethodMetadata);
 
-            for (int index = 0; index < parameters.Length; index++)
+            foreach (ParameterInfo parameter in parameters)
             {
-                ParameterInfo parameter = parameters[index];
-                
                 if (parameter.IsOut || parameter.IsOptional) 
                     throw new NotSupportedException("Out and Optional parameters are not supported");
 

@@ -99,7 +99,10 @@ namespace EasyPeasy.Client.Implementation
         /// <param name="credentials"> The credentials. </param>
         /// <param name="mediaCodecs"> The map of media type handlers</param>
         /// <returns> The created request </returns>
-        public WebRequest CreateRequest(Uri baseUri, ICredentials credentials, IDictionary<string, IMediaTypeHandler> mediaCodecs)
+        public WebRequest CreateRequest(
+            Uri baseUri, 
+            ICredentials credentials, 
+            IDictionary<string, IMediaTypeHandler> mediaCodecs)
         {
             Uri fullUri = this.CreateUri(baseUri);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullUri);
@@ -136,6 +139,7 @@ namespace EasyPeasy.Client.Implementation
             Path endpoint = new Path(this.ServicePath).Append(new Path(this.MethodPath));
 
             Path specializedPath = endpoint.ReplacePathVariables(this.PathParameters);
+
             QueryString qs =
                 QueryString.Create().AddAll(
                     this.QueryParameters
@@ -143,6 +147,7 @@ namespace EasyPeasy.Client.Implementation
                         .Select(kv => Tuple.Create(kv.Key, kv.Value.ToString())));
 
             UriBuilder builder = new UriBuilder(baseUri);
+
             builder.Path = specializedPath.FullPath;
             builder.Query = qs.ToString();
 
