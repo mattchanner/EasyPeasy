@@ -36,6 +36,6 @@ namespace EasyPeasy.Client.Tests.Implementation
     [TestFixture]
     public class MethodMetadataTests
     {
-        public void Can_create_web_request_
+        
     }
 }
