@@ -46,7 +46,9 @@ namespace EasyPeasy
 
             ICredentials credentials = new NetworkCredential("Administrator", "Password");
 
-            IContactService contactService = ServiceProxy.CreateProxy<IContactService>(baseAddress, credentials);
+            IEasyPeasyFactory factory = new EasyPeasyFactory();
+
+            IContactService contactService = factory.Create<IContactService>(baseAddress, credentials);
 
             contactService.CreateContactAsync(new Contact { Address = "Address1", Name = "Joe Bloggs" })
                     .ContinueWith(task => Console.WriteLine("Contact created"));

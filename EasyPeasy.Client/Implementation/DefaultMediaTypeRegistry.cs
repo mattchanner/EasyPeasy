@@ -32,7 +32,7 @@ namespace EasyPeasy.Client.Implementation
     /// <summary>
     /// The pre configured registry used by default when not provided by a client
     /// </summary>
-    public class DefaultMediaTypeRegistry : IMediaTypeHandlerRegistry
+    internal class DefaultMediaTypeRegistry : IMediaTypeHandlerRegistry
     {
         /// <summary> The type specific media handlers to be used in preference of the standard media types </summary>
         private readonly IDictionary<Type, IMediaTypeHandler> typeSpecificHandlers;

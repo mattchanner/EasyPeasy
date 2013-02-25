@@ -45,16 +45,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Codecs\ImageMediaTypeHandler.cs" />
-    <Compile Include="Codecs\Int32TypeHandler.cs" />
     <Compile Include="Codecs\JsonMediaTypeHandler.cs" />
     <Compile Include="Codecs\PlainTextMediaTypeHandler.cs" />
     <Compile Include="Codecs\ValueTypeHandler.cs" />
     <Compile Include="Codecs\XmlMediaTypeHandler.cs" />
     <Compile Include="EasyPeasyException.cs" />
+    <Compile Include="IEasyPeasyFactory.cs" />
     <Compile Include="IMediaTypeHandler.cs" />
     <Compile Include="IMediaTypeHandlerRegistry.cs" />
     <Compile Include="Implementation\DefaultMediaTypeRegistry.cs" />
     <Compile Include="Implementation\DuplicateKeyException.cs" />
+    <Compile Include="EasyPeasyFactory.cs" />
     <Compile Include="Implementation\Ensure.cs" />
     <Compile Include="Implementation\HttpVerb.cs" />
     <Compile Include="Implementation\ILWriter.cs" />
@@ -70,7 +71,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ServiceProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyPeasy\EasyPeasy.csproj">

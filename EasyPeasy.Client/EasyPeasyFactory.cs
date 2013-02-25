@@ -1,32 +1,36 @@
-﻿// -----------------------------------------------------------------------------
-// <copyright file="ServiceProxy.cs">
-// 
-//  The MIT License (MIT)
-//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the “Software”),
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
-//  Software is furnished to do so, subject to the following conditions:
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="EasyPeasyFactory.cs">
 //
-//  The above copyright notice and this permission notice shall be included 
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
-//  THE SOFTWARE.
+//   The MIT License (MIT)
+//     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
+//    
+//     Permission is hereby granted, free of charge, to any person obtaining a 
+//     copy of this software and associated documentation files (the “Software”),
+//     to deal in the Software without restriction, including without limitation 
+//     the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+//     and/or sell copies of the Software, and to permit persons to whom the 
+//     Software is furnished to do so, subject to the following conditions:
+//   
+//     The above copyright notice and this permission notice shall be included 
+//     in all copies or substantial portions of the Software.
+//   
+//     THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+//     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+//     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+//     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+//     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+//     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//     THE SOFTWARE.
 // </copyright>
-// ------------------------------------------------------------------------------
+// <summary>
+//   An implementation of the <see cref="IEasyPeasyFactory" /> interface.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections.Concurrent;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -42,9 +46,9 @@ using EasyPeasy.Client.Properties;
 namespace EasyPeasy.Client
 {
     /// <summary>
-    /// The service proxy is responsible for generating new implementation types for service interfaces
+    /// An implementation of the <see cref="IEasyPeasyFactory"/> interface.
     /// </summary>
-    public static class ServiceProxy
+    public class EasyPeasyFactory : IEasyPeasyFactory
     {
         /// <summary> The attributes to apply to the new class </summary>
         private const TypeAttributes ClassAttributes =
@@ -64,59 +68,77 @@ namespace EasyPeasy.Client
         /// <summary> The dictionary of generated types </summary>
         private static readonly ConcurrentDictionary<string, Type> CachedTypes = new ConcurrentDictionary<string, Type>();
 
-        /// <summary> The registry of media types </summary>
-        private static readonly IMediaTypeHandlerRegistry MediaRegistry;
-
-        /// <summary> The assembly builder. </summary>
+        /// <summary> The assembly builder (shared across instances to enable type caching). </summary>
         private static volatile AssemblyBuilder assemblyBuilder;
 
-        /// <summary> The module builder. </summary>
+        /// <summary> The module builder (shared across instances to enable type caching). </summary>
         private static volatile ModuleBuilder moduleBuilder;
-        
+
+        /// <summary> The registry of serialization types. </summary>
+        private readonly IMediaTypeHandlerRegistry registry;
+
         /// <summary>
-        /// Initializes static members of the <see cref="ServiceProxy"/> class.
+        /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
         /// </summary>
-        static ServiceProxy()
+        public EasyPeasyFactory()
         {
-            MediaRegistry = new DefaultMediaTypeRegistry();
+            registry = new DefaultMediaTypeRegistry();
 
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ApplicationXml,  new XmlMediaTypeHandler());
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.TextXml, new XmlMediaTypeHandler());
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ApplicationJson, new JsonMediaTypeHandler());
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.TextHtml, new PlainTextMediaTypeHandler());
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.TextPlain, new PlainTextMediaTypeHandler());
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageBMP, new ImageMediaTypeHandler(ImageFormat.Bmp));
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageGIF, new ImageMediaTypeHandler(ImageFormat.Gif));
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageJPG, new ImageMediaTypeHandler(ImageFormat.Jpeg));
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImagePNG, new ImageMediaTypeHandler(ImageFormat.Png));
-            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageTIFF, new ImageMediaTypeHandler(ImageFormat.Tiff));
+            registry.RegisterMediaTypeHandler(MediaType.ApplicationXml, new XmlMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.TextXml, new XmlMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.ApplicationJson, new JsonMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.TextHtml, new PlainTextMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.TextPlain, new PlainTextMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.ImageBMP, new ImageMediaTypeHandler(ImageFormat.Bmp));
+            registry.RegisterMediaTypeHandler(MediaType.ImageGIF, new ImageMediaTypeHandler(ImageFormat.Gif));
+            registry.RegisterMediaTypeHandler(MediaType.ImageJPG, new ImageMediaTypeHandler(ImageFormat.Jpeg));
+            registry.RegisterMediaTypeHandler(MediaType.ImagePNG, new ImageMediaTypeHandler(ImageFormat.Png));
+            registry.RegisterMediaTypeHandler(MediaType.ImageTIFF, new ImageMediaTypeHandler(ImageFormat.Tiff));
 
-            MediaRegistry.RegisterCustomTypeHandler(typeof(string), new PlainTextMediaTypeHandler());
-            MediaRegistry.RegisterCustomTypeHandler(typeof(bool), new ValueTypeHandler(TypeCode.Boolean));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(byte), new ValueTypeHandler(TypeCode.Byte));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(char), new ValueTypeHandler(TypeCode.Char));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(DateTime), new ValueTypeHandler(TypeCode.DateTime));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(decimal), new ValueTypeHandler(TypeCode.Decimal));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(double), new ValueTypeHandler(TypeCode.Double));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(short), new ValueTypeHandler(TypeCode.Int16));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(int), new ValueTypeHandler(TypeCode.Int32));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(long), new ValueTypeHandler(TypeCode.Int64));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(sbyte), new ValueTypeHandler(TypeCode.SByte));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(float), new ValueTypeHandler(TypeCode.Single));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(ushort), new ValueTypeHandler(TypeCode.UInt16));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(uint), new ValueTypeHandler(TypeCode.UInt32));
-            MediaRegistry.RegisterCustomTypeHandler(typeof(ulong), new ValueTypeHandler(TypeCode.UInt64));
+            registry.RegisterCustomTypeHandler(typeof(string), new PlainTextMediaTypeHandler());
+            registry.RegisterCustomTypeHandler(typeof(bool), new ValueTypeHandler(TypeCode.Boolean));
+            registry.RegisterCustomTypeHandler(typeof(byte), new ValueTypeHandler(TypeCode.Byte));
+            registry.RegisterCustomTypeHandler(typeof(char), new ValueTypeHandler(TypeCode.Char));
+            registry.RegisterCustomTypeHandler(typeof(DateTime), new ValueTypeHandler(TypeCode.DateTime));
+            registry.RegisterCustomTypeHandler(typeof(decimal), new ValueTypeHandler(TypeCode.Decimal));
+            registry.RegisterCustomTypeHandler(typeof(double), new ValueTypeHandler(TypeCode.Double));
+            registry.RegisterCustomTypeHandler(typeof(short), new ValueTypeHandler(TypeCode.Int16));
+            registry.RegisterCustomTypeHandler(typeof(int), new ValueTypeHandler(TypeCode.Int32));
+            registry.RegisterCustomTypeHandler(typeof(long), new ValueTypeHandler(TypeCode.Int64));
+            registry.RegisterCustomTypeHandler(typeof(sbyte), new ValueTypeHandler(TypeCode.SByte));
+            registry.RegisterCustomTypeHandler(typeof(float), new ValueTypeHandler(TypeCode.Single));
+            registry.RegisterCustomTypeHandler(typeof(ushort), new ValueTypeHandler(TypeCode.UInt16));
+            registry.RegisterCustomTypeHandler(typeof(uint), new ValueTypeHandler(TypeCode.UInt32));
+            registry.RegisterCustomTypeHandler(typeof(ulong), new ValueTypeHandler(TypeCode.UInt64));
         }
 
         /// <summary>
-        /// Creates the proxy for the given type
+        /// Gets the registry of media type handlers used by each generated service to marshal types
+        /// across the wire
         /// </summary>
-        /// <param name="baseUri"> The base URI. </param>
-        /// <param name="credentials"> The credentials to set on the request. </param>
-        /// <typeparam name="TService"> The type to generate a proxy for  </typeparam>
-        /// <returns> The <see cref="TService"/> instance.  </returns>
-        /// <exception cref="ArgumentException"> Raised when TService is not an interface </exception>
-        public static TService CreateProxy<TService>(Uri baseUri, ICredentials credentials = null)
+        public IMediaTypeHandlerRegistry Registry
+        {
+            get
+            {
+                return registry;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new implementation of the given service type, or returns an existing one if the
+        /// type has previously been proxied.
+        /// </summary>
+        /// <param name="baseUri"> The base URI for the service being called. </param>
+        /// <param name="credentials"> An optional <see cref="ICredentials"/> instance to be assigned to the
+        /// underlying web request. </param>
+        /// <typeparam name="TService"> The type of service to construct a proxy for.  Note that this must be
+        /// an interface </typeparam>
+        /// <returns> The created <see cref="TService"/> implementation. Note that this type will also
+        /// implement the <see cref="IServiceClient"/> interface </returns>
+        /// <exception cref="ArgumentNullException">Raised if baseUri is null</exception>
+        /// <exception cref="ArgumentException">Raised if TService does not represent an interface</exception>
+        /// <exception cref="ArgumentException">Raised if TService does not represent a public type</exception>
+        public TService Create<TService>(Uri baseUri, ICredentials credentials = null) where TService : class
         {
             Type serviceType = typeof(TService);
 
@@ -126,33 +148,42 @@ namespace EasyPeasy.Client
 
             EnsureBuilderIsInitialized();
 
-            string implementationName = serviceType.Name + "<Impl>";
-            Type implementationType = CachedTypes.GetOrAdd(implementationName, _ => CreateProxyCore(serviceType, implementationName));
+            TService service;
 
-            ConstructorInfo ctor = implementationType.GetConstructor(Type.EmptyTypes);
-            if (ctor == null)
-                throw new EasyPeasyException(Resources.DefaultConstructorNotFoundOnNewType);
+            lock (Locker)
+            {
+                string implementationName = serviceType.Name + "<Impl>";
+                Type implementationType = CachedTypes.GetOrAdd(
+                    implementationName, _ => CreateProxyCore(serviceType, implementationName));
 
-            TService service = (TService)ctor.Invoke(Type.EmptyTypes);
+                ConstructorInfo ctor = implementationType.GetConstructor(Type.EmptyTypes);
+                if (ctor == null) 
+                    throw new EasyPeasyException(Resources.DefaultConstructorNotFoundOnNewType);
 
-            IServiceClient serviceClient = (IServiceClient)service;
-            serviceClient.BaseUri = baseUri;
-            serviceClient.Credentials = credentials;
+                service = (TService)ctor.Invoke(Type.EmptyTypes);
 
-            serviceClient.MediaRegistry = MediaRegistry;
+                IServiceClient serviceClient = (IServiceClient)service;
+                serviceClient.BaseUri = baseUri;
+                serviceClient.Credentials = credentials;
+
+                serviceClient.MediaRegistry = registry;
+            }
 
             return service;
         }
 
-#if DEBUG
         /// <summary>
-        /// Saves the assembly to file
+        /// Saves the assembly to disk
         /// </summary>
-        public static void SaveAssembly()
+        /// <param name="assemblyPath">The path to save the assembly to</param>
+        public void SaveGeneratedAssembly(FileInfo assemblyPath)
         {
-            assemblyBuilder.Save(assemblyBuilder.GetName().Name + ".dll");
+            Ensure.IsNotNull(assemblyPath, "assemblyPath");
+            if (assemblyPath.Exists)
+                assemblyPath.Delete();
+
+            assemblyBuilder.Save(assemblyPath.FullName);
         }
-#endif
 
         /// <summary>
         /// The core method for creating a new proxy type
@@ -182,7 +213,7 @@ namespace EasyPeasy.Client
             Type returnType = interfaceMethod.ReturnType;
 
             ParameterInfo[] parameters = interfaceMethod.GetParameters().ToArray();
-            
+
             MethodBuilder methodBuilder = classBuilder.DefineMethod(
                     interfaceMethod.Name,
                     MethodAttributes.Public | MethodAttributes.Virtual,
@@ -190,12 +221,12 @@ namespace EasyPeasy.Client
                     parameters.Select(p => p.ParameterType).ToArray());
 
             // Assign names and attributes to each method parameter
-            for (int paramIndex = 0; paramIndex < parameters.Length; paramIndex++)
+            foreach (ParameterInfo t in parameters)
             {
                 methodBuilder.DefineParameter(
-                    parameters[paramIndex].Position + 1, // Parameter position is 1 based in DefineParameter (0 == return value)
-                    parameters[paramIndex].Attributes, 
-                    parameters[paramIndex].Name);
+                    t.Position + 1, // Parameter position is 1 based in DefineParameter (0 == return value)
+                    t.Attributes,
+                    t.Name);
             }
 
             bool isGenericMethod = returnType.IsGenericType;
@@ -219,7 +250,7 @@ namespace EasyPeasy.Client
                     baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType);
                 }
             }
-            
+
             ILGenerator il = methodBuilder.GetILGenerator();
 
             // Set up local variables
@@ -280,11 +311,11 @@ namespace EasyPeasy.Client
                 {
                     attributeFound = true;
                     ILWriter.AssignParameterValueToDictionaryProperty(
-                        il, 
-                        metadataLocal, 
-                        methodMetaType, 
-                        "Headers", 
-                        headerAttribute.HeaderName, 
+                        il,
+                        metadataLocal,
+                        methodMetaType,
+                        "Headers",
+                        headerAttribute.HeaderName,
                         parameter);
                 }
 
@@ -327,7 +358,7 @@ namespace EasyPeasy.Client
                 }
             }
         }
-        
+
         /// <summary>
         /// Populates the high level metadata properties
         /// </summary>
@@ -371,8 +402,8 @@ namespace EasyPeasy.Client
                 if (isAsyncRequest)
                 {
                     // If response is a raw response, no conversion is needed, so use the raw method
-                    return genericDefinition == typeof(WebResponse) 
-                        ? "AsyncRequestWithRawResponse" 
+                    return genericDefinition == typeof(WebResponse)
+                        ? "AsyncRequestWithRawResponse"
                         : "AsyncRequestWithResult";
                 }
 
@@ -391,7 +422,7 @@ namespace EasyPeasy.Client
                 return isAsyncRequest ? "AsyncVoidRequest" : "SyncRequestWithResult";
             }
         }
-        
+
         /// <summary>
         /// Constructs a type builder which generates a class type implementing
         /// the given interface
