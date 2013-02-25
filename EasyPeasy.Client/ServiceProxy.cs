@@ -38,13 +38,14 @@ using System.Threading.Tasks;
 using EasyPeasy.Attributes;
 using EasyPeasy.Client.Codecs;
 using EasyPeasy.Client.Implementation;
+using EasyPeasy.Client.Properties;
 
 namespace EasyPeasy.Client
 {
     /// <summary>
     /// The service proxy is responsible for generating new implementation types for service interfaces
     /// </summary>
-    public class ServiceProxy
+    public static class ServiceProxy
     {
         /// <summary> The attributes to apply to the new class </summary>
         private const TypeAttributes ClassAttributes =
@@ -101,22 +102,18 @@ namespace EasyPeasy.Client
         public static TService CreateProxy<TService>(Uri baseUri, ICredentials credentials = null)
         {
             Type serviceType = typeof(TService);
-            
-            if (serviceType.IsInterface == false)
-                throw new ArgumentException("TService must be an interface");
+
+            Ensure.IsNotNull(baseUri, "baseUri");
+            Ensure.That(serviceType.IsInterface, Resources.ServiceMustBeAnInterfaceType);
 
             EnsureBuilderIsInitialized();
 
             string implementationName = serviceType.Name + "<Impl>";
             Type implementationType = CachedTypes.GetOrAdd(implementationName, _ => CreateProxyCore(serviceType, implementationName));
 
-#if DEBUG
-            assemblyBuilder.Save(assemblyBuilder.GetName().Name + ".dll");
-#endif
-
             ConstructorInfo ctor = implementationType.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
-                throw new EasyPeasyException("Unable to retrieve default constructor for generated type");
+                throw new EasyPeasyException(Resources.DefaultConstructorNotFoundOnNewType);
 
             TService service = (TService)ctor.Invoke(Type.EmptyTypes);
 
@@ -126,6 +123,11 @@ namespace EasyPeasy.Client
 
             foreach (var kv in MediaTypeHandlers)
                 serviceClient.MediaTypeHandlers.Add(kv.Key, kv.Value);
+
+#if DEBUG
+            // Save out the created assembly so it can be inspected
+            assemblyBuilder.Save(assemblyBuilder.GetName().Name + ".dll");
+#endif
 
             return service;
         }
@@ -233,8 +235,8 @@ namespace EasyPeasy.Client
 
             foreach (ParameterInfo parameter in parameters)
             {
-                if (parameter.IsOut || parameter.IsOptional) 
-                    throw new NotSupportedException("Out and Optional parameters are not supported");
+                if (parameter.IsOut || parameter.IsOptional)
+                    throw new NotSupportedException(Resources.OutAndOptionalParamsNotSupported);
 
                 bool attributeFound = false;
 

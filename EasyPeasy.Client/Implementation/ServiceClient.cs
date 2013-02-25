@@ -73,7 +73,7 @@ namespace EasyPeasy.Client.Implementation
             Console.WriteLine("AsyncRequestWithResult called");
 
             IMediaTypeHandler handler;
-            if (this.MediaTypeHandlers.TryGetValue(methodProperties.Produces, out handler))
+            if (!this.MediaTypeHandlers.TryGetValue(methodProperties.Produces, out handler))
             {
                 throw new EasyPeasyException(methodProperties.Produces + " does not have a valid handler");
             }
@@ -155,7 +155,7 @@ namespace EasyPeasy.Client.Implementation
         /// Creates a new web request and returns the result as a task.
         /// </summary>
         /// <param name="methodProperties"> The method properties. </param>
-        /// <returns> The <see cref="Task"/>. </returns>
+        /// <returns> The created <see cref="Task"/>. </returns>
         private Task<WebResponse> CreateRequest(MethodMetadata methodProperties)
         {
             WebRequest request = methodProperties.CreateRequest(this.BaseUri, this.Credentials, this.MediaTypeHandlers);
