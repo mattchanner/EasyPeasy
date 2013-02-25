@@ -25,7 +25,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -37,13 +36,21 @@ namespace EasyPeasy.Client.Implementation
     /// </summary>
     public abstract class ServiceClient : IServiceClient
     {
+        /// <summary> The default amount of time to wait before timing out </summary>
+        private const int DefaultTimeoutMs = 1000 * 32;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceClient"/> class.
         /// </summary>
         protected ServiceClient()
         {
-            this.MediaTypeHandlers = new Dictionary<string, IMediaTypeHandler>();
+            this.Timeout = TimeSpan.FromMilliseconds(DefaultTimeoutMs);
         }
+
+        /// <summary>
+        /// Gets or sets the amount of time to wait for a synchronous request before timing out
+        /// </summary>
+        public TimeSpan Timeout { get; set; }
 
         /// <summary>
         /// Gets or sets the base URI to use for each service method
@@ -56,9 +63,9 @@ namespace EasyPeasy.Client.Implementation
         public ICredentials Credentials { get; set; }
 
         /// <summary>
-        /// Gets the dictionary containing each media type handler implementation, keyed by the media type
+        /// Gets or sets the registry to use for serializing types
         /// </summary>
-        public IDictionary<string, IMediaTypeHandler> MediaTypeHandlers { get; private set; }
+        public IMediaTypeHandlerRegistry MediaRegistry { get; set; }
 
         /// <summary>
         /// Executes a service request based on metadata provided by the given <see cref="MethodInfo"/>, and supplied
@@ -70,20 +77,16 @@ namespace EasyPeasy.Client.Implementation
         /// calling the service. </returns>
         protected Task<T> AsyncRequestWithResult<T>(MethodMetadata methodProperties)
         {
-            Console.WriteLine("AsyncRequestWithResult called");
-
             IMediaTypeHandler handler;
-            if (!this.MediaTypeHandlers.TryGetValue(methodProperties.Produces, out handler))
-            {
+            if (!this.MediaRegistry.TryGetHandler(typeof(T), methodProperties.Produces, out handler))
                 throw new EasyPeasyException(methodProperties.Produces + " does not have a valid handler");
-            }
-
+            
             Task<WebResponse> task = CreateRequest(methodProperties);
 
             return task.ContinueWith(t =>
                 {
                     CheckTaskForException(t);
-                    return (T)handler.Consume(t.Result.GetResponseStream(), typeof(T));
+                    return (T)handler.ReadObject(t.Result, t.Result.GetResponseStream(), typeof(T));
                 });
         }
 
@@ -95,8 +98,6 @@ namespace EasyPeasy.Client.Implementation
         /// <returns> The raw web response. </returns>
         protected Task<WebResponse> AsyncRequestWithRawResponse(MethodMetadata methodProperties)
         {
-            Console.WriteLine("SyncRequestWithRawResponse called");
-
             return CreateRequest(methodProperties);
         }
 
@@ -121,16 +122,12 @@ namespace EasyPeasy.Client.Implementation
         /// <returns> The result of calling the service. </returns>
         protected T SyncRequestWithResult<T>(MethodMetadata methodProperties)
         {
-            Console.WriteLine("SyncRequestWithResult called");
-
             IMediaTypeHandler handler;
-            if (!this.MediaTypeHandlers.TryGetValue(methodProperties.Produces, out handler))
-            {
+            if (!this.MediaRegistry.TryGetHandler(typeof(T), methodProperties.Produces, out handler))
                 throw new EasyPeasyException(methodProperties.Produces + " does not have a valid handler");
-            }
-
+            
             WebResponse response = SyncRequestWithRawResponse(methodProperties);
-            return (T)handler.Consume(response.GetResponseStream(), typeof(T));
+            return (T)handler.ReadObject(response, response.GetResponseStream(), typeof(T));
         }
 
         /// <summary>
@@ -141,12 +138,8 @@ namespace EasyPeasy.Client.Implementation
         /// <returns> The raw web response. </returns>
         protected WebResponse SyncRequestWithRawResponse(MethodMetadata methodProperties)
         {
-            Console.WriteLine("SyncRequestWithRawResponse called");
-
             Task<WebResponse> task = CreateRequest(methodProperties);
-
-            task.Wait();
-
+            task.Wait(Timeout);
             CheckTaskForException(task);
 
             return task.Result;
@@ -159,9 +152,8 @@ namespace EasyPeasy.Client.Implementation
         /// <param name="methodProperties"> The details about the method to invoke. </param>
         protected void SyncVoidRequest(MethodMetadata methodProperties)
         {
-            Console.WriteLine("SyncVoidRequest called");
             Task<WebResponse> task = CreateRequest(methodProperties);
-            task.Wait();
+            task.Wait(Timeout);
             CheckTaskForException(task);
         }
 
@@ -185,7 +177,7 @@ namespace EasyPeasy.Client.Implementation
         /// <returns> The created <see cref="Task"/>. </returns>
         private Task<WebResponse> CreateRequest(MethodMetadata methodProperties)
         {
-            WebRequest request = methodProperties.CreateRequest(this.BaseUri, this.Credentials, this.MediaTypeHandlers);
+            WebRequest request = methodProperties.CreateRequest(this.BaseUri, this.Credentials, this.MediaRegistry);
             return Task<WebResponse>.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
         }
     }
