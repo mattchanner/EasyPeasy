@@ -43,6 +43,7 @@ namespace EasyPeasy.Client.Codecs
         {
             StreamWriter writer = new StreamWriter(body);
             writer.Write(value);
+            writer.Flush();
         }
 
         /// <summary>

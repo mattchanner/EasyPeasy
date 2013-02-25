@@ -35,7 +35,7 @@ namespace EasyPeasy
     public interface IContactService
     {
         [GET, Path("/{name}")]
-        Contact GetContact([PathParam("name")] string name);
+        Contact GetContact([PathParam("name")] string name, [QueryParam("q")] int num);
 
         [GET, Path("/{name}")]
         Task<Contact> GetContactSync([PathParam("name")] string name);
@@ -47,7 +47,7 @@ namespace EasyPeasy
         Task CreateContactAsync(Contact contact);
 
         [DELETE, Path("/{name}")]
-        void DeleteContact([PathParam("name")] string name);
+        void DeleteContact([PathParam("name")] string name, [HeaderParam("Content-Type")] string content);
 
         [DELETE, Path("/{name}")]
         Task DeleteContactAsync([PathParam("name")] string name);

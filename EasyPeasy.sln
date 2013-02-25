@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy", "EasyPeasy\Easy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Client", "EasyPeasy.Client\EasyPeasy.Client.csproj", "{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Client.Tests", "EasyPeasy.Client.Tests\EasyPeasy.Client.Tests.csproj", "{9BF752BE-CD37-475D-AA65-962E457629C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}.Release|x86.ActiveCfg = Release|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -54,7 +54,7 @@ namespace EasyPeasy.Client.Codecs
         /// to generate a response of the type appropriate for the defined media type.
         /// </summary>
         /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The expected type to deserialize</param>
+        /// <param name="objectType"> The expected type to de-serialize</param>
         /// <returns> The <see cref="object"/> read from the stream. </returns>
         public object Consume(Stream body, Type objectType)
         {

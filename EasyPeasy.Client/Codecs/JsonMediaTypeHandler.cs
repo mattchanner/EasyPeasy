@@ -46,6 +46,7 @@ namespace EasyPeasy.Client.Codecs
             JsonSerializer serializer = new JsonSerializer();
             TextWriter textWriter = new StreamWriter(body);
             serializer.Serialize(textWriter, value);
+            textWriter.Flush();
         }
 
         /// <summary>
