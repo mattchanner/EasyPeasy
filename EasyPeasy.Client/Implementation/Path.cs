@@ -34,7 +34,7 @@ namespace EasyPeasy.Client.Implementation
     /// <summary>
     /// Represents a path to a server resources
     /// </summary>
-    public class Path
+    internal class Path
     {
         /// <summary> The path separator </summary>
         private const string PathSeperator = "/";
@@ -147,6 +147,7 @@ namespace EasyPeasy.Client.Implementation
 
             Group lastGroup = variableNames[variableNames.Count - 1];
             int endPosition = lastGroup.Index + lastGroup.Length;
+
             if (this.rootPath.Length > endPosition)
             {
                 pathBuilder.Append(this.rootPath.Substring(endPosition + 1));

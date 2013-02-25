@@ -34,7 +34,7 @@ namespace EasyPeasy.Client.Codecs
     /// <summary>
     /// Represents a handler for XML types
     /// </summary>
-    public class XmlMediaTypeHandler : IMediaTypeHandler
+    internal class XmlMediaTypeHandler : IMediaTypeHandler
     {
         /// <summary> The serializer factory </summary>
         private static readonly XmlSerializerFactory Factory = new XmlSerializerFactory();

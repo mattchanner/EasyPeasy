@@ -26,7 +26,7 @@
 
 using System;
 
-namespace EasyPeasy.Client.Implementation
+namespace EasyPeasy.Client
 {
     /// <summary>
     /// An exception raised when a duplicate key is added to a collection
@@ -39,8 +39,7 @@ namespace EasyPeasy.Client.Implementation
         /// <param name="keyName">
         /// The key name.
         /// </param>
-        public DuplicateKeyException(string keyName)
-            : base(string.Format("{0} already exists", keyName))
+        public DuplicateKeyException(string keyName) : base(string.Format("{0} already exists", keyName))
         {
             this.KeyName = keyName;
         }

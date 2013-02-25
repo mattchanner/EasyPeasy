@@ -35,6 +35,7 @@
       <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -44,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Codecs\FileInfoTypeHandler.cs" />
     <Compile Include="Codecs\ImageMediaTypeHandler.cs" />
     <Compile Include="Codecs\JsonMediaTypeHandler.cs" />
     <Compile Include="Codecs\PlainTextMediaTypeHandler.cs" />
@@ -54,7 +56,7 @@
     <Compile Include="IMediaTypeHandler.cs" />
     <Compile Include="IMediaTypeHandlerRegistry.cs" />
     <Compile Include="Implementation\DefaultMediaTypeRegistry.cs" />
-    <Compile Include="Implementation\DuplicateKeyException.cs" />
+    <Compile Include="DuplicateKeyException.cs" />
     <Compile Include="EasyPeasyFactory.cs" />
     <Compile Include="Implementation\Ensure.cs" />
     <Compile Include="Implementation\HttpVerb.cs" />

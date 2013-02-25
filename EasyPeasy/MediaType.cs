@@ -60,5 +60,11 @@ namespace EasyPeasy
 
         /// <summary> Bitmap Image media type </summary>
         public const string ImageBMP = "image/bmp";
+
+        /// <summary> Multipart form data </summary>
+        public const string MultipartFormData = "multipart/form-data";
+
+        /// <summary> The octet stream mime type </summary>
+        public const string ApplicationOctetStream = "application/octetstream";
     }
 }

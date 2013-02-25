@@ -35,7 +35,7 @@ namespace EasyPeasy.Client.Implementation
     /// <summary>
     /// A simple utility class for constructing query string parameters
     /// </summary>
-    public class QueryString
+    internal class QueryString
     {
         /// <summary> The parameters. </summary>
         private readonly NameValueCollection parameters = new NameValueCollection();

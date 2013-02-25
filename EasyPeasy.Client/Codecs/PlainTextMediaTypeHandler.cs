@@ -33,7 +33,7 @@ namespace EasyPeasy.Client.Codecs
     /// <summary>
     /// Represents a simple string handler
     /// </summary>
-    public class PlainTextMediaTypeHandler : IMediaTypeHandler
+    internal class PlainTextMediaTypeHandler : IMediaTypeHandler
     {
         /// <summary>
         /// When called, this method is responsible for writing the value to the stream

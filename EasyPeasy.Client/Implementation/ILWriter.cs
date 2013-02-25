@@ -34,7 +34,7 @@ namespace EasyPeasy.Client.Implementation
     /// <summary>
     /// A set of utility methods for writing IL
     /// </summary>
-    public class ILWriter
+    internal class ILWriter
     {
         /// <summary> The constructor attributes. </summary>
         private const MethodAttributes ConstructorAttributes =

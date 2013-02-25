@@ -35,7 +35,7 @@ namespace EasyPeasy.Client.Codecs
     /// <summary>
     /// A JSON handler
     /// </summary>
-    public class JsonMediaTypeHandler : IMediaTypeHandler
+    internal class JsonMediaTypeHandler : IMediaTypeHandler
     {
         /// <summary>
         /// When called, this method is responsible for writing the value to the stream

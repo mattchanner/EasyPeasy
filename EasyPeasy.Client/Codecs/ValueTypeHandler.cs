@@ -37,7 +37,7 @@ namespace EasyPeasy.Client.Codecs
     /// <summary>
     /// A handler to read and write various value types
     /// </summary>
-    public class ValueTypeHandler : IMediaTypeHandler
+    internal class ValueTypeHandler : IMediaTypeHandler
     {
         /// <summary> The type code to read and write. </summary>
         private readonly TypeCode typeCode;

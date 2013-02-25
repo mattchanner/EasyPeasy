@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel.Composition;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -48,6 +49,7 @@ namespace EasyPeasy.Client
     /// <summary>
     /// An implementation of the <see cref="IEasyPeasyFactory"/> interface.
     /// </summary>
+    [Export(typeof(IEasyPeasyFactory))]
     public class EasyPeasyFactory : IEasyPeasyFactory
     {
         /// <summary> The attributes to apply to the new class </summary>
@@ -80,36 +82,50 @@ namespace EasyPeasy.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
         /// </summary>
+        [ImportingConstructor]
         public EasyPeasyFactory()
         {
             registry = new DefaultMediaTypeRegistry();
 
-            registry.RegisterMediaTypeHandler(MediaType.ApplicationXml, new XmlMediaTypeHandler());
-            registry.RegisterMediaTypeHandler(MediaType.TextXml, new XmlMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.ApplicationXml,  new XmlMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.TextXml,         new XmlMediaTypeHandler());
             registry.RegisterMediaTypeHandler(MediaType.ApplicationJson, new JsonMediaTypeHandler());
-            registry.RegisterMediaTypeHandler(MediaType.TextHtml, new PlainTextMediaTypeHandler());
-            registry.RegisterMediaTypeHandler(MediaType.TextPlain, new PlainTextMediaTypeHandler());
-            registry.RegisterMediaTypeHandler(MediaType.ImageBMP, new ImageMediaTypeHandler(ImageFormat.Bmp));
-            registry.RegisterMediaTypeHandler(MediaType.ImageGIF, new ImageMediaTypeHandler(ImageFormat.Gif));
-            registry.RegisterMediaTypeHandler(MediaType.ImageJPG, new ImageMediaTypeHandler(ImageFormat.Jpeg));
-            registry.RegisterMediaTypeHandler(MediaType.ImagePNG, new ImageMediaTypeHandler(ImageFormat.Png));
-            registry.RegisterMediaTypeHandler(MediaType.ImageTIFF, new ImageMediaTypeHandler(ImageFormat.Tiff));
+            registry.RegisterMediaTypeHandler(MediaType.TextHtml,        new PlainTextMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.TextPlain,       new PlainTextMediaTypeHandler());
+            registry.RegisterMediaTypeHandler(MediaType.ImageBMP,        new ImageMediaTypeHandler(ImageFormat.Bmp));
+            registry.RegisterMediaTypeHandler(MediaType.ImageGIF,        new ImageMediaTypeHandler(ImageFormat.Gif));
+            registry.RegisterMediaTypeHandler(MediaType.ImageJPG,        new ImageMediaTypeHandler(ImageFormat.Jpeg));
+            registry.RegisterMediaTypeHandler(MediaType.ImagePNG,        new ImageMediaTypeHandler(ImageFormat.Png));
+            registry.RegisterMediaTypeHandler(MediaType.ImageTIFF,       new ImageMediaTypeHandler(ImageFormat.Tiff));
 
-            registry.RegisterCustomTypeHandler(typeof(string), new PlainTextMediaTypeHandler());
-            registry.RegisterCustomTypeHandler(typeof(bool), new ValueTypeHandler(TypeCode.Boolean));
-            registry.RegisterCustomTypeHandler(typeof(byte), new ValueTypeHandler(TypeCode.Byte));
-            registry.RegisterCustomTypeHandler(typeof(char), new ValueTypeHandler(TypeCode.Char));
+            registry.RegisterCustomTypeHandler(typeof(string),   new PlainTextMediaTypeHandler());
+            registry.RegisterCustomTypeHandler(typeof(bool),     new ValueTypeHandler(TypeCode.Boolean));
+            registry.RegisterCustomTypeHandler(typeof(byte),     new ValueTypeHandler(TypeCode.Byte));
+            registry.RegisterCustomTypeHandler(typeof(char),     new ValueTypeHandler(TypeCode.Char));
             registry.RegisterCustomTypeHandler(typeof(DateTime), new ValueTypeHandler(TypeCode.DateTime));
-            registry.RegisterCustomTypeHandler(typeof(decimal), new ValueTypeHandler(TypeCode.Decimal));
-            registry.RegisterCustomTypeHandler(typeof(double), new ValueTypeHandler(TypeCode.Double));
-            registry.RegisterCustomTypeHandler(typeof(short), new ValueTypeHandler(TypeCode.Int16));
-            registry.RegisterCustomTypeHandler(typeof(int), new ValueTypeHandler(TypeCode.Int32));
-            registry.RegisterCustomTypeHandler(typeof(long), new ValueTypeHandler(TypeCode.Int64));
-            registry.RegisterCustomTypeHandler(typeof(sbyte), new ValueTypeHandler(TypeCode.SByte));
-            registry.RegisterCustomTypeHandler(typeof(float), new ValueTypeHandler(TypeCode.Single));
-            registry.RegisterCustomTypeHandler(typeof(ushort), new ValueTypeHandler(TypeCode.UInt16));
-            registry.RegisterCustomTypeHandler(typeof(uint), new ValueTypeHandler(TypeCode.UInt32));
-            registry.RegisterCustomTypeHandler(typeof(ulong), new ValueTypeHandler(TypeCode.UInt64));
+            registry.RegisterCustomTypeHandler(typeof(decimal),  new ValueTypeHandler(TypeCode.Decimal));
+            registry.RegisterCustomTypeHandler(typeof(double),   new ValueTypeHandler(TypeCode.Double));
+            registry.RegisterCustomTypeHandler(typeof(short),    new ValueTypeHandler(TypeCode.Int16));
+            registry.RegisterCustomTypeHandler(typeof(int),      new ValueTypeHandler(TypeCode.Int32));
+            registry.RegisterCustomTypeHandler(typeof(long),     new ValueTypeHandler(TypeCode.Int64));
+            registry.RegisterCustomTypeHandler(typeof(sbyte),    new ValueTypeHandler(TypeCode.SByte));
+            registry.RegisterCustomTypeHandler(typeof(float),    new ValueTypeHandler(TypeCode.Single));
+            registry.RegisterCustomTypeHandler(typeof(ushort),   new ValueTypeHandler(TypeCode.UInt16));
+            registry.RegisterCustomTypeHandler(typeof(uint),     new ValueTypeHandler(TypeCode.UInt32));
+            registry.RegisterCustomTypeHandler(typeof(ulong),    new ValueTypeHandler(TypeCode.UInt64));
+            registry.RegisterCustomTypeHandler(typeof(FileInfo), new FileInfoTypeHandler());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
+        /// </summary>
+        /// <param name="registry"> The registry. </param>
+        [ImportingConstructor]
+        public EasyPeasyFactory(IMediaTypeHandlerRegistry registry)
+        {
+            Ensure.IsNotNull(registry, "registry");
+
+            this.registry = registry;
         }
 
         /// <summary>
@@ -182,7 +198,7 @@ namespace EasyPeasy.Client
             if (assemblyPath.Exists)
                 assemblyPath.Delete();
 
-            assemblyBuilder.Save(assemblyPath.FullName);
+            assemblyBuilder.Save(assemblyPath.Name);
         }
 
         /// <summary>
@@ -480,13 +496,8 @@ namespace EasyPeasy.Client
 
             AppDomain thisDomain = Thread.GetDomain();
 
-#if DEBUG
             AssemblyBuilder asmBuilder = thisDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave);
             ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, "DynamicServiceAssembly.dll");
-#else
-            AssemblyBuilder asmBuilder = thisDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
-            ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, false);
-#endif
 
             return Tuple.Create(asmBuilder, modBuilder);
         }

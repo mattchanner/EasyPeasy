@@ -35,7 +35,7 @@ namespace EasyPeasy.Client.Codecs
     /// <summary>
     /// A media type handler for standard image types
     /// </summary>
-    public class ImageMediaTypeHandler : IMediaTypeHandler
+    internal class ImageMediaTypeHandler : IMediaTypeHandler
     {
         /// <summary> The format to use when reading and writing. </summary>
         private readonly ImageFormat format;
