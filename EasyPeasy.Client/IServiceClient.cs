@@ -25,7 +25,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace EasyPeasy.Client
@@ -42,13 +41,18 @@ namespace EasyPeasy.Client
         Uri BaseUri { get; set; }
 
         /// <summary>
+        /// Gets or sets the amount of time to wait on a synchronous request before timing out
+        /// </summary>
+        TimeSpan Timeout { get; set; }
+
+        /// <summary>
         /// Gets or sets the credentials to be sent with each service request
         /// </summary>
         ICredentials Credentials { get; set; }
 
         /// <summary>
-        /// Gets the dictionary containing each media type handler implementation, keyed by the media type
+        /// Gets or sets the registry to use for serializing types
         /// </summary>
-        IDictionary<string, IMediaTypeHandler> MediaTypeHandlers { get; }
+        IMediaTypeHandlerRegistry MediaRegistry { get; set; }
     }
 }

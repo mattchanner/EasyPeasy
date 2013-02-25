@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Xml.Serialization;
 
 namespace EasyPeasy.Client.Codecs
@@ -41,9 +42,10 @@ namespace EasyPeasy.Client.Codecs
         /// <summary>
         /// When called, this method is responsible for writing the value to the stream
         /// </summary>
+        /// <param name="request">The web request </param>
         /// <param name="value">The value to write</param>
         /// <param name="body">The stream to write to</param>
-        public void Produce(object value, Stream body)
+        public void WriteObject(WebRequest request, object value, Stream body)
         {
             XmlSerializer serializer = Factory.CreateSerializer(value.GetType());
             serializer.Serialize(body, value);
@@ -53,10 +55,11 @@ namespace EasyPeasy.Client.Codecs
         /// When called, this method is responsible for reading the contents of the body stream in order
         /// to generate a response of the type appropriate for the defined media type.
         /// </summary>
+        /// <param name="response">The web response </param>
         /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The expected type to de-serialize</param>
-        /// <returns> The <see cref="object"/> read from the stream. </returns>
-        public object Consume(Stream body, Type objectType)
+        /// <param name="objectType"> The type to de-serialize. </param>
+        /// <returns> The <see cref="object"/> read from the stream.  </returns>
+        public object ReadObject(WebResponse response, Stream body, Type objectType)
         {
             XmlSerializer serializer = Factory.CreateSerializer(objectType);
             return serializer.Deserialize(body);

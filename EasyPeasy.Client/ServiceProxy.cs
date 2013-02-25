@@ -26,13 +26,11 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,30 +64,48 @@ namespace EasyPeasy.Client
         /// <summary> The dictionary of generated types </summary>
         private static readonly ConcurrentDictionary<string, Type> CachedTypes = new ConcurrentDictionary<string, Type>();
 
-        /// <summary> The dictionary of media type handlers </summary>
-        private static readonly IDictionary<string, IMediaTypeHandler> MediaTypeHandlers = new Dictionary<string, IMediaTypeHandler>(); 
+        /// <summary> The registry of media types </summary>
+        private static readonly IMediaTypeHandlerRegistry MediaRegistry;
 
         /// <summary> The assembly builder. </summary>
         private static volatile AssemblyBuilder assemblyBuilder;
 
         /// <summary> The module builder. </summary>
         private static volatile ModuleBuilder moduleBuilder;
-
+        
         /// <summary>
         /// Initializes static members of the <see cref="ServiceProxy"/> class.
         /// </summary>
         static ServiceProxy()
         {
-            MediaTypeHandlers[MediaType.ApplicationXml] = new XmlMediaTypeHandler();
-            MediaTypeHandlers[MediaType.TextXml] = new XmlMediaTypeHandler();
-            MediaTypeHandlers[MediaType.ApplicationJson] = new JsonMediaTypeHandler();
-            MediaTypeHandlers[MediaType.TextHtml] = new PlainTextMediaTypeHandler();
-            MediaTypeHandlers[MediaType.TextPlain] = new PlainTextMediaTypeHandler();
-            MediaTypeHandlers[MediaType.ImageBMP] = new ImageMediaTypeHandler(ImageFormat.Bmp);
-            MediaTypeHandlers[MediaType.ImageGIF] = new ImageMediaTypeHandler(ImageFormat.Gif);
-            MediaTypeHandlers[MediaType.ImageJPG] = new ImageMediaTypeHandler(ImageFormat.Jpeg);
-            MediaTypeHandlers[MediaType.ImagePNG] = new ImageMediaTypeHandler(ImageFormat.Png);
-            MediaTypeHandlers[MediaType.ImageTIFF] = new ImageMediaTypeHandler(ImageFormat.Tiff);
+            MediaRegistry = new DefaultMediaTypeRegistry();
+
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ApplicationXml,  new XmlMediaTypeHandler());
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.TextXml, new XmlMediaTypeHandler());
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ApplicationJson, new JsonMediaTypeHandler());
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.TextHtml, new PlainTextMediaTypeHandler());
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.TextPlain, new PlainTextMediaTypeHandler());
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageBMP, new ImageMediaTypeHandler(ImageFormat.Bmp));
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageGIF, new ImageMediaTypeHandler(ImageFormat.Gif));
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageJPG, new ImageMediaTypeHandler(ImageFormat.Jpeg));
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImagePNG, new ImageMediaTypeHandler(ImageFormat.Png));
+            MediaRegistry.RegisterMediaTypeHandler(MediaType.ImageTIFF, new ImageMediaTypeHandler(ImageFormat.Tiff));
+
+            MediaRegistry.RegisterCustomTypeHandler(typeof(string), new PlainTextMediaTypeHandler());
+            MediaRegistry.RegisterCustomTypeHandler(typeof(bool), new ValueTypeHandler(TypeCode.Boolean));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(byte), new ValueTypeHandler(TypeCode.Byte));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(char), new ValueTypeHandler(TypeCode.Char));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(DateTime), new ValueTypeHandler(TypeCode.DateTime));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(decimal), new ValueTypeHandler(TypeCode.Decimal));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(double), new ValueTypeHandler(TypeCode.Double));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(short), new ValueTypeHandler(TypeCode.Int16));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(int), new ValueTypeHandler(TypeCode.Int32));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(long), new ValueTypeHandler(TypeCode.Int64));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(sbyte), new ValueTypeHandler(TypeCode.SByte));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(float), new ValueTypeHandler(TypeCode.Single));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(ushort), new ValueTypeHandler(TypeCode.UInt16));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(uint), new ValueTypeHandler(TypeCode.UInt32));
+            MediaRegistry.RegisterCustomTypeHandler(typeof(ulong), new ValueTypeHandler(TypeCode.UInt64));
         }
 
         /// <summary>
@@ -123,8 +139,7 @@ namespace EasyPeasy.Client
             serviceClient.BaseUri = baseUri;
             serviceClient.Credentials = credentials;
 
-            foreach (var kv in MediaTypeHandlers)
-                serviceClient.MediaTypeHandlers.Add(kv.Key, kv.Value);
+            serviceClient.MediaRegistry = MediaRegistry;
 
             return service;
         }

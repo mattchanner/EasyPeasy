@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 
 namespace EasyPeasy.Client
 {
@@ -38,19 +39,19 @@ namespace EasyPeasy.Client
         /// <summary>
         /// When called, this method is responsible for writing the value to the stream
         /// </summary>
+        /// <param name="request">The web request being written to </param>
         /// <param name="value">The value to write</param>
         /// <param name="body">The stream to write to</param>
-        void Produce(object value, Stream body);
+        void WriteObject(WebRequest request, object value, Stream body);
 
         /// <summary>
         /// When called, this method is responsible for reading the contents of the body stream in order
         /// to generate a response of the type appropriate for the defined media type.
         /// </summary>
-        /// <param name="body">
-        /// The stream to write to
-        /// </param>
-        /// <param name="objectType"> The type to de-serialize. </param>
-        /// <returns> The <see cref="object"/> read from the stream.  </returns>
-        object Consume(Stream body, Type objectType);
+        /// <param name="response"> The response being read from. </param>
+        /// <param name="body"> The stream to write to </param>
+        /// <param name="objectType"> The type to de-serialize.  </param>
+        /// <returns> The <see cref="object"/> read from the stream.   </returns>
+        object ReadObject(WebResponse response, Stream body, Type objectType);
     }
 }

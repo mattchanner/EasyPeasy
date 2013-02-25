@@ -54,12 +54,12 @@ namespace EasyPeasy.Client.Tests.Codecs
 
             MemoryStream stream = new MemoryStream();
 
-            handler.Produce(sourceImage, stream);
+            handler.WriteObject(null, sourceImage, stream);
             stream.Seek(0, SeekOrigin.Begin);
 
             Assert.That(stream.Length, Is.Not.EqualTo(0));
 
-            object imageResult = handler.Consume(stream, typeof(Image));
+            object imageResult = handler.ReadObject(null, stream, typeof(Image));
             Assert.That(imageResult, Is.Not.Null);
             Assert.That(imageResult, Is.InstanceOf<Image>());
 

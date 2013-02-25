@@ -67,7 +67,7 @@ namespace EasyPeasy.Client.Tests.Codecs
 
             MemoryStream stream = new MemoryStream();
 
-            handler.Produce(dto, stream);
+            handler.WriteObject(null, dto, stream);
 
             stream.Seek(0, SeekOrigin.Begin);
             byte[] bytes = stream.ToArray();
@@ -93,7 +93,7 @@ namespace EasyPeasy.Client.Tests.Codecs
             byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(XmlString);
             MemoryStream stream = new MemoryStream(jsonBytes);
 
-            object result = handler.Consume(stream, typeof(SimpleDto));
+            object result = handler.ReadObject(null, stream, typeof(SimpleDto));
             Assert.That(result, Is.Not.Null);
 
             SimpleDto dto = (SimpleDto)result;

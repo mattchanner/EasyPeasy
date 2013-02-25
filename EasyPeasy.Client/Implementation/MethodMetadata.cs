@@ -37,6 +37,12 @@ namespace EasyPeasy.Client.Implementation
     /// </summary>
     public class MethodMetadata
     {
+        /// <summary> The content type header. </summary>
+        private const string ContentTypeHeader = "content-type";
+
+        /// <summary> The content type header. </summary>
+        private const string AcceptsHeader = "accept";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodMetadata"/> class.
         /// </summary>
@@ -97,12 +103,12 @@ namespace EasyPeasy.Client.Implementation
         /// </summary>
         /// <param name="baseUri"> The base Uri. </param>
         /// <param name="credentials"> The credentials. </param>
-        /// <param name="mediaCodecs"> The map of media type handlers</param>
+        /// <param name="mediaRegistry"> The registry of media type handlers</param>
         /// <returns> The created request </returns>
         public WebRequest CreateRequest(
             Uri baseUri, 
             ICredentials credentials, 
-            IDictionary<string, IMediaTypeHandler> mediaCodecs)
+            IMediaTypeHandlerRegistry mediaRegistry)
         {
             Uri fullUri = this.CreateUri(baseUri);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullUri);
@@ -114,15 +120,28 @@ namespace EasyPeasy.Client.Implementation
 
             foreach (var kv in this.Headers.Where(kv => kv.Value != null && kv.Key != null))
             {
-                request.Headers.Add(kv.Key, Convert.ToString(kv.Value));
+                // WebRequest throws exceptions if the Accept and Content-Type headers are set indirectly,
+                // so need to check for these explicitly and set the associated properties if found
+                if (string.Compare(kv.Key, AcceptsHeader, StringComparison.InvariantCultureIgnoreCase) == 0)
+                {
+                    request.Accept = Convert.ToString(kv.Value);
+                }
+                else if (string.Compare(kv.Key, ContentTypeHeader, StringComparison.InvariantCultureIgnoreCase) == 0)
+                {
+                    request.ContentType = Convert.ToString(kv.Value);
+                }
+                else
+                {
+                    request.Headers.Add(kv.Key, Convert.ToString(kv.Value));    
+                }
             }
 
             if (this.RequestBody != null)
             {
                 IMediaTypeHandler handler;
-                if (mediaCodecs.TryGetValue(this.Consumes, out handler))
+                if (mediaRegistry.TryGetHandler(this.RequestBody.GetType(), this.Consumes, out handler))
                 {
-                    handler.Produce(this.RequestBody, request.GetRequestStream());
+                    handler.WriteObject(request, this.RequestBody, request.GetRequestStream());
                 }
             }
 

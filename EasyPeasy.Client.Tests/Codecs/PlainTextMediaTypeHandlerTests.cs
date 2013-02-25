@@ -59,7 +59,7 @@ namespace EasyPeasy.Client.Tests.Codecs
             const string SourceString = "easy peasy lemon squeezy";
             MemoryStream stream = new MemoryStream();
 
-            handler.Produce(SourceString, stream);
+            handler.WriteObject(null, SourceString, stream);
 
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -81,7 +81,7 @@ namespace EasyPeasy.Client.Tests.Codecs
             MemoryStream stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(SourceString));
             stream.Seek(0, SeekOrigin.Begin);
 
-            object result = handler.Consume(stream, typeof(string));
+            object result = handler.ReadObject(null, stream, typeof(string));
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<string>());
             string stringResult = (string)result;
