@@ -68,8 +68,10 @@ public interface ICustomerService
 
 <p>The proxy type can then be created simply by calling:</p>
 
-<pre><code>ICustomerService client = 
-    ServiceProxy.CreateProxy&lt;ICustomerService&gt;(
+<pre><code>
+IEasyPeasyFactory factory = new EasyPeasyFactory();
+ICustomerService client = 
+    factory.Create&lt;ICustomerService&gt;(
         new Uri("http://server.com"));
 Customer customer = client.GetCustomer("My Customer");
 </code></pre>
