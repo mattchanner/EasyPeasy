@@ -77,17 +77,17 @@ namespace EasyPeasy.Client.Implementation
         }
 
         /// <summary>
-        /// Gets the read only list of extracted variable namees
+        /// Gets the read only list of extracted variable names
         /// </summary>
         public IEnumerable<string> VariableNames
         {
-            get { return this.variableNames.Select(g => g.Value); }
+            get { return new HashSet<string>(this.variableNames.Select(g => g.Value)); }
         }
 
         /// <summary>
         /// Joins this path with another, returning the result as a new path instance.
         /// </summary>
-        /// <param name="other">Th eother path to join to</param>
+        /// <param name="other">The other path to join to</param>
         /// <returns>The new <see cref="Path"/> instance</returns>
         public Path Append(Path other)
         {
@@ -136,6 +136,10 @@ namespace EasyPeasy.Client.Implementation
                 {
                     string mappedString = mappedValue == null ? string.Empty : mappedValue.ToString();
                     pathBuilder.Append(mappedString);
+                }
+                else
+                {
+                    throw new EasyPeasyException(string.Format("Path contains an unknown parameter of '{0}'", group.Value));
                 }
 
                 previousIndex = group.Index + group.Length + 1;
