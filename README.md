@@ -28,8 +28,8 @@ Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki
 
 The proxy type can then be created simply by calling:
 
-
-    ICustomerService client = ServiceProxy.CreateProxy<ICustomerService>(new Uri("http://server.com"));
+    IEasyPeasyFactory factory = new EasyPeasyFactory();
+    ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
     Customer customer = client.GetCustomer("My Customer");
 
 ### The following attributes are supported:
