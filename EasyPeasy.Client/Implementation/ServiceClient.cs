@@ -92,6 +92,19 @@ namespace EasyPeasy.Client.Implementation
         /// runtime arguments.
         /// </summary>
         /// <param name="methodProperties"> The details about the method to invoke. </param>
+        /// <returns> The raw web response. </returns>
+        protected Task<WebResponse> AsyncRequestWithRawResponse(MethodMetadata methodProperties)
+        {
+            Console.WriteLine("SyncRequestWithRawResponse called");
+
+            return CreateRequest(methodProperties);
+        }
+
+        /// <summary>
+        /// Executes a service request based on metadata provided by the given <see cref="MethodInfo"/>, and supplied
+        /// runtime arguments.
+        /// </summary>
+        /// <param name="methodProperties"> The details about the method to invoke. </param>
         /// <returns> The <see cref="Task"/> which when run to completion, returns the result of 
         /// calling the service. </returns>
         protected Task AsyncVoidRequest(MethodMetadata methodProperties)
@@ -116,13 +129,27 @@ namespace EasyPeasy.Client.Implementation
                 throw new EasyPeasyException(methodProperties.Produces + " does not have a valid handler");
             }
 
+            WebResponse response = SyncRequestWithRawResponse(methodProperties);
+            return (T)handler.Consume(response.GetResponseStream(), typeof(T));
+        }
+
+        /// <summary>
+        /// Executes a service request based on metadata provided by the given <see cref="MethodInfo"/>, and supplied
+        /// runtime arguments.
+        /// </summary>
+        /// <param name="methodProperties"> The details about the method to invoke. </param>
+        /// <returns> The raw web response. </returns>
+        protected WebResponse SyncRequestWithRawResponse(MethodMetadata methodProperties)
+        {
+            Console.WriteLine("SyncRequestWithRawResponse called");
+
             Task<WebResponse> task = CreateRequest(methodProperties);
 
             task.Wait();
 
             CheckTaskForException(task);
 
-            return (T)handler.Consume(task.Result.GetResponseStream(), typeof(T));
+            return task.Result;
         }
 
         /// <summary>

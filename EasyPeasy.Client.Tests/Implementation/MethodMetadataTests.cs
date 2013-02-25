@@ -36,6 +36,5 @@ namespace EasyPeasy.Client.Tests.Implementation
     [TestFixture]
     public class MethodMetadataTests
     {
-        
     }
 }

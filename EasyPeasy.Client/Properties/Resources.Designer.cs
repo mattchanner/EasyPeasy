@@ -86,5 +86,14 @@ namespace EasyPeasy.Client.Properties {
                 return ResourceManager.GetString("ServiceMustBeAnInterfaceType", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TService must be public.
+        /// </summary>
+        internal static string ServiceMustBePublic {
+            get {
+                return ResourceManager.GetString("ServiceMustBePublic", resourceCulture);
+            }
+        }
     }
 }

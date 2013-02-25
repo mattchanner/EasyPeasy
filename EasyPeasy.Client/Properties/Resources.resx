@@ -126,4 +126,7 @@
   <data name="ServiceMustBeAnInterfaceType" xml:space="preserve">
     <value>TService must be an interface</value>
   </data>
+  <data name="ServiceMustBePublic" xml:space="preserve">
+    <value>TService must be public</value>
+  </data>
 </root>

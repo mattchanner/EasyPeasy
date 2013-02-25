@@ -32,6 +32,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -105,6 +106,7 @@ namespace EasyPeasy.Client
 
             Ensure.IsNotNull(baseUri, "baseUri");
             Ensure.That(serviceType.IsInterface, Resources.ServiceMustBeAnInterfaceType);
+            Ensure.That(serviceType.IsPublic, Resources.ServiceMustBePublic);
 
             EnsureBuilderIsInitialized();
 
@@ -124,13 +126,18 @@ namespace EasyPeasy.Client
             foreach (var kv in MediaTypeHandlers)
                 serviceClient.MediaTypeHandlers.Add(kv.Key, kv.Value);
 
-#if DEBUG
-            // Save out the created assembly so it can be inspected
-            assemblyBuilder.Save(assemblyBuilder.GetName().Name + ".dll");
-#endif
-
             return service;
         }
+
+#if DEBUG
+        /// <summary>
+        /// Saves the assembly to file
+        /// </summary>
+        public static void SaveAssembly()
+        {
+            assemblyBuilder.Save(assemblyBuilder.GetName().Name + ".dll");
+        }
+#endif
 
         /// <summary>
         /// The core method for creating a new proxy type
@@ -159,11 +166,22 @@ namespace EasyPeasy.Client
         {
             Type returnType = interfaceMethod.ReturnType;
 
+            ParameterInfo[] parameters = interfaceMethod.GetParameters().ToArray();
+            
             MethodBuilder methodBuilder = classBuilder.DefineMethod(
                     interfaceMethod.Name,
                     MethodAttributes.Public | MethodAttributes.Virtual,
                     returnType,
-                    interfaceMethod.GetParameters().Select(p => p.ParameterType).ToArray());
+                    parameters.Select(p => p.ParameterType).ToArray());
+
+            // Assign names and attributes to each method parameter
+            for (int paramIndex = 0; paramIndex < parameters.Length; paramIndex++)
+            {
+                methodBuilder.DefineParameter(
+                    parameters[paramIndex].Position + 1, // Parameter position is 1 based in DefineParameter (0 == return value)
+                    parameters[paramIndex].Attributes, 
+                    parameters[paramIndex].Name);
+            }
 
             bool isGenericMethod = returnType.IsGenericType;
             bool isVoidMethod = returnType.IsVoid();
@@ -179,8 +197,10 @@ namespace EasyPeasy.Client
                 {
                     baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType.GetGenericArguments());
                 }
-                else if (returnType != typeof(Task))
+                else if (returnType != typeof(Task) && returnType != typeof(WebResponse))
                 {
+                    // Return type is not one handled specifically by the underlying method being called, so make a generic
+                    // version of the base method
                     baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType);
                 }
             }
@@ -235,7 +255,7 @@ namespace EasyPeasy.Client
 
             foreach (ParameterInfo parameter in parameters)
             {
-                if (parameter.IsOut || parameter.IsOptional)
+                if (parameter.IsOut)
                     throw new NotSupportedException(Resources.OutAndOptionalParamsNotSupported);
 
                 bool attributeFound = false;
@@ -330,8 +350,18 @@ namespace EasyPeasy.Client
             if (returnType.IsGenericType)
             {
                 Type genericDefinition = returnType.GetGenericTypeDefinition();
+
                 bool isAsyncRequest = genericDefinition == typeof(Task<>);
-                return isAsyncRequest ? "AsyncRequestWithResult" : "SyncRequestWithResult";
+
+                if (isAsyncRequest)
+                {
+                    // If response is a raw response, no conversion is needed, so use the raw method
+                    return genericDefinition == typeof(WebResponse) 
+                        ? "AsyncRequestWithRawResponse" 
+                        : "AsyncRequestWithResult";
+                }
+
+                return "SyncRequestWithResult";
             }
             else if (returnType.IsVoid())
             {
@@ -340,6 +370,9 @@ namespace EasyPeasy.Client
             else
             {
                 bool isAsyncRequest = returnType == typeof(Task);
+                bool isRawRequest = returnType == typeof(WebResponse);
+
+                if (isRawRequest) return "SyncRequestWithRawResponse";
                 return isAsyncRequest ? "AsyncVoidRequest" : "SyncRequestWithResult";
             }
         }
