@@ -29,7 +29,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.ComponentModel.Composition;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -49,7 +48,6 @@ namespace EasyPeasy.Client
     /// <summary>
     /// An implementation of the <see cref="IEasyPeasyFactory"/> interface.
     /// </summary>
-    [Export(typeof(IEasyPeasyFactory))]
     public class EasyPeasyFactory : IEasyPeasyFactory
     {
         /// <summary> The attributes to apply to the new class </summary>
@@ -82,7 +80,6 @@ namespace EasyPeasy.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
         /// </summary>
-        [ImportingConstructor]
         public EasyPeasyFactory()
         {
             registry = new DefaultMediaTypeRegistry();
@@ -120,7 +117,6 @@ namespace EasyPeasy.Client
         /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
         /// </summary>
         /// <param name="registry"> The registry. </param>
-        [ImportingConstructor]
         public EasyPeasyFactory(IMediaTypeHandlerRegistry registry)
         {
             Ensure.IsNotNull(registry, "registry");

@@ -35,7 +35,7 @@ namespace EasyPeasy.Client.Implementation
     /// <summary>
     /// A set of reflection based static methods
     /// </summary>
-    public static class ReflectionUtils
+    internal static class ReflectionUtils
     {
         /// <summary>
         /// Returns the HttpVerb based on method attributes.

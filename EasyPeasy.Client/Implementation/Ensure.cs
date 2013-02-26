@@ -31,7 +31,7 @@ namespace EasyPeasy.Client.Implementation
     /// <summary>
     /// A set of constraints to act as preconditions for method invocations.
     /// </summary>
-    public static class Ensure
+    internal static class Ensure
     {
         /// <summary>
         /// Raises an <see cref="ArgumentNullException"/> when <paramref name="instance"/> is null.
