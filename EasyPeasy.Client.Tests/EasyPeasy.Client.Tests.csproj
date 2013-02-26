@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Codecs\ByteArrayTypeHandlerTests.cs" />
     <Compile Include="Codecs\ImageMediaTypeHandlerTests.cs" />
     <Compile Include="Codecs\JsonMediaTypeHandlerTests.cs" />
     <Compile Include="Codecs\PlainTextMediaTypeHandlerTests.cs" />
