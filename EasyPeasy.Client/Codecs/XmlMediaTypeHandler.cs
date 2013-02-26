@@ -47,7 +47,7 @@ namespace EasyPeasy.Client.Codecs
         /// <param name="body">The stream to write to</param>
         public void WriteObject(WebRequest request, object value, Stream body)
         {
-            XmlSerializer serializer = Factory.CreateSerializer(value.GetType());
+            XmlSerializer serializer = new XmlSerializer(value.GetType());
             serializer.Serialize(body, value);
         }
 
@@ -61,7 +61,7 @@ namespace EasyPeasy.Client.Codecs
         /// <returns> The <see cref="object"/> read from the stream.  </returns>
         public object ReadObject(WebResponse response, Stream body, Type objectType)
         {
-            XmlSerializer serializer = Factory.CreateSerializer(objectType);
+            XmlSerializer serializer = new XmlSerializer(objectType);
             return serializer.Deserialize(body);
         }
     }

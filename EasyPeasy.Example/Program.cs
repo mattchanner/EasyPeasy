@@ -39,9 +39,6 @@ namespace EasyPeasy
         /// <summary> The main method. </summary>
         public static void Main()
         {
-            // Add to allow communication to sites with self-signed certificates
-            // ServicePointManager.ServerCertificateValidationCallback = ValidationCallback;
-            
             Uri baseAddress = new Uri("http://server");
 
             ICredentials credentials = new NetworkCredential("Administrator", "Password");
@@ -54,11 +51,6 @@ namespace EasyPeasy
                     .ContinueWith(task => Console.WriteLine("Contact created"));
 
             Console.ReadKey();
-        }
-
-        private static bool ValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslpolicyerrors)
-        {
-            return true;
         }
     }
 }

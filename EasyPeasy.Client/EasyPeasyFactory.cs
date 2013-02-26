@@ -95,6 +95,7 @@ namespace EasyPeasy.Client
             registry.RegisterMediaTypeHandler(MediaType.ImagePNG,        new ImageMediaTypeHandler(ImageFormat.Png));
             registry.RegisterMediaTypeHandler(MediaType.ImageTIFF,       new ImageMediaTypeHandler(ImageFormat.Tiff));
 
+            registry.RegisterCustomTypeHandler(typeof(byte[]),   new ByteArrayTypeHandler());
             registry.RegisterCustomTypeHandler(typeof(string),   new PlainTextMediaTypeHandler());
             registry.RegisterCustomTypeHandler(typeof(bool),     new ValueTypeHandler(TypeCode.Boolean));
             registry.RegisterCustomTypeHandler(typeof(byte),     new ValueTypeHandler(TypeCode.Byte));
@@ -236,7 +237,7 @@ namespace EasyPeasy.Client
             foreach (ParameterInfo t in parameters)
             {
                 methodBuilder.DefineParameter(
-                    t.Position + 1, // Parameter position is 1 based in DefineParameter (0 == return value)
+                    t.Position + 1, // Parameter position is 1 based (0 == return value)
                     t.Attributes,
                     t.Name);
             }
@@ -380,8 +381,10 @@ namespace EasyPeasy.Client
         private static void PopulateMetadata(ILGenerator il, LocalBuilder metadataLocal, MethodInfo interfaceMethod)
         {
             HttpVerb verb = ReflectionUtils.DetermineHttpVerb(interfaceMethod);
+
             string consumeMediaType = ReflectionUtils.DetermineConsumesMediaType(interfaceMethod, MediaType.TextXml);
             string producesMediaType = ReflectionUtils.DetermineProducesMediaType(interfaceMethod, MediaType.TextXml);
+            
             PathAttribute methodPathAttr = ReflectionUtils.GetAttribute<PathAttribute>(interfaceMethod);
             PathAttribute servicePathAttr = ReflectionUtils.GetAttribute<PathAttribute>(interfaceMethod.DeclaringType);
 
