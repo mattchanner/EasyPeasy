@@ -114,7 +114,7 @@ namespace EasyPeasy.Client.Implementation
         /// <param name="parameterValue"> The parameter value. </param>
         public void AddQueryParameter(string parameterName, object parameterValue)
         {
-            this.queryParameters.Add(parameterName, parameterValue);
+            this.queryParameters.MaybeAdd(parameterName, parameterValue);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace EasyPeasy.Client.Implementation
         /// <param name="parameterValue"> The parameter value. </param>
         public void AddFormParameter(string parameterName, object parameterValue)
         {
-            this.formParameters.Add(parameterName, parameterValue);
+            this.formParameters.MaybeAdd(parameterName, parameterValue);
         }
 
         /// <summary>
