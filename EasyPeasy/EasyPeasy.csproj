@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Attributes\ConsumesAttribute.cs" />
     <Compile Include="Attributes\DELETEAttribute.cs" />
+    <Compile Include="Attributes\FormParamAttribute.cs" />
     <Compile Include="Attributes\GETAttribute.cs" />
     <Compile Include="Attributes\HeaderParamAttribute.cs" />
     <Compile Include="Attributes\PathAttribute.cs" />

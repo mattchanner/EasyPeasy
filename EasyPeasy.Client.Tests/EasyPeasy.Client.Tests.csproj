@@ -53,7 +53,7 @@
     <Compile Include="FactoryTests.cs" />
     <Compile Include="Implementation\MethodMetadataTests.cs" />
     <Compile Include="Implementation\PathTests.cs" />
-    <Compile Include="Implementation\QueryStringTests.cs" />
+    <Compile Include="Implementation\ParameterCollectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

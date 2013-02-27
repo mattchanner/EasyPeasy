@@ -365,11 +365,11 @@ namespace EasyPeasy.Client
                 if (headerAttribute != null)
                 {
                     attributeFound = true;
-                    ILWriter.AssignParameterValueToDictionaryProperty(
+                    ILWriter.AddParameter(
                         il,
+                        "AddHeaderParameter",
                         metadataLocal,
                         methodMetaType,
-                        "Headers",
                         headerAttribute.HeaderName,
                         parameter);
                 }
@@ -378,12 +378,25 @@ namespace EasyPeasy.Client
                 if (queryAttribute != null)
                 {
                     attributeFound = true;
-                    ILWriter.AssignParameterValueToDictionaryProperty(
+                    ILWriter.AddParameter(
                         il,
+                        "AddQueryParameter",
                         metadataLocal,
                         methodMetaType,
-                        "QueryParameters",
                         queryAttribute.ParameterName,
+                        parameter);
+                }
+
+                FormParamAttribute formAttribute = ReflectionUtils.GetAttribute<FormParamAttribute>(parameter);
+                if (formAttribute != null)
+                {
+                    attributeFound = true;
+                    ILWriter.AddParameter(
+                        il,
+                        "AddFormParameter",
+                        metadataLocal,
+                        methodMetaType,
+                        formAttribute.ParameterName,
                         parameter);
                 }
 
@@ -391,11 +404,11 @@ namespace EasyPeasy.Client
                 if (pathAttribute != null)
                 {
                     attributeFound = true;
-                    ILWriter.AssignParameterValueToDictionaryProperty(
+                    ILWriter.AddParameter(
                         il,
+                        "AddPathParameter",
                         metadataLocal,
                         methodMetaType,
-                        "PathParameters",
                         pathAttribute.ParameterName,
                         parameter);
                 }

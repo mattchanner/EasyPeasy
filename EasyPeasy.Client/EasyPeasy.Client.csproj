@@ -61,6 +61,7 @@
     <Compile Include="EasyPeasyException.cs" />
     <Compile Include="IEasyPeasyFactory.cs" />
     <Compile Include="Implementation\AutoUnregisterToken.cs" />
+    <Compile Include="Implementation\ParameterCollection.cs" />
     <Compile Include="IRequestInterceptor.cs" />
     <Compile Include="IMediaTypeHandler.cs" />
     <Compile Include="IMediaTypeHandlerRegistry.cs" />
@@ -72,7 +73,6 @@
     <Compile Include="Implementation\ILWriter.cs" />
     <Compile Include="Implementation\MethodMetadata.cs" />
     <Compile Include="Implementation\Path.cs" />
-    <Compile Include="Implementation\QueryString.cs" />
     <Compile Include="Implementation\ReflectionUtils.cs" />
     <Compile Include="Implementation\ServiceClient.cs" />
     <Compile Include="IServiceClient.cs" />

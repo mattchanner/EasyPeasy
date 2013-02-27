@@ -66,5 +66,8 @@ namespace EasyPeasy
 
         /// <summary> The octet stream mime type </summary>
         public const string ApplicationOctetStream = "application/octetstream";
+
+        /// <summary> The application/x-www-form-urlencoded media type</summary>
+        public const string ApplicationUrlEncoded = "application/x-www-form-urlencoded";
     }
 }

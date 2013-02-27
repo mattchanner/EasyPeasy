@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 
@@ -43,14 +44,27 @@ namespace EasyPeasy.Client.Implementation
         /// <summary> The content type header. </summary>
         private const string AcceptsHeader = "accept";
 
+        /// <summary> The query parameters. </summary>
+        private ParameterCollection queryParameters;
+        
+        /// <summary> The form parameter. </summary>
+        private ParameterCollection formParameters;
+
+        /// <summary> The header parameters. </summary>
+        private IDictionary<string, object> headerParameters;
+
+        /// <summary> The path parameters. </summary>
+        private IDictionary<string, object> pathParameters;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodMetadata"/> class.
         /// </summary>
         public MethodMetadata()
         {
-            this.Headers = new Dictionary<string, object>();
-            this.QueryParameters = new SortedDictionary<string, object>();
-            this.PathParameters = new SortedDictionary<string, object>();
+            this.headerParameters = new Dictionary<string, object>();
+            this.pathParameters = new Dictionary<string, object>();
+            this.queryParameters = ParameterCollection.Create();
+            this.formParameters = ParameterCollection.Create();
         }
 
         /// <summary>
@@ -79,24 +93,49 @@ namespace EasyPeasy.Client.Implementation
         public HttpVerb Verb { get; set; }
 
         /// <summary>
-        /// Gets the custom headers to add to the request.
-        /// </summary>
-        public IDictionary<string, object> Headers { get; private set; }
-
-        /// <summary>
-        /// Gets the query string parameters to add to the request
-        /// </summary>
-        public IDictionary<string, object> QueryParameters { get; private set; }
-
-        /// <summary>
-        /// Gets the path parameters to add to the request
-        /// </summary>
-        public IDictionary<string, object> PathParameters { get; private set; }
-
-        /// <summary>
         /// Gets or sets the body to be sent with the request
         /// </summary>
         public object RequestBody { get; set; }
+
+        /// <summary>
+        /// Adds a header to the collection
+        /// </summary>
+        /// <param name="headerName"> The header name. </param>
+        /// <param name="headerValue"> The header value. </param>
+        public void AddHeaderParameter(string headerName, object headerValue)
+        {
+            this.headerParameters.Add(headerName, headerValue);
+        }
+
+        /// <summary>
+        /// Adds a header to the collection
+        /// </summary>
+        /// <param name="parameterName"> The parameter name. </param>
+        /// <param name="parameterValue"> The parameter value. </param>
+        public void AddQueryParameter(string parameterName, object parameterValue)
+        {
+            this.queryParameters.Add(parameterName, parameterValue);
+        }
+
+        /// <summary>
+        /// Adds a header to the collection
+        /// </summary>
+        /// <param name="parameterName"> The parameter name. </param>
+        /// <param name="parameterValue"> The parameter value. </param>
+        public void AddFormParameter(string parameterName, object parameterValue)
+        {
+            this.formParameters.Add(parameterName, parameterValue);
+        }
+
+        /// <summary>
+        /// Adds a path parameter to the collection
+        /// </summary>
+        /// <param name="parameterName"> The parameter name. </param>
+        /// <param name="parameterValue"> The parameter value. </param>
+        public void AddPathParameter(string parameterName, object parameterValue)
+        {
+            this.pathParameters.Add(parameterName, parameterValue);
+        }
 
         /// <summary>
         /// Creates a web request based on the information held within this class
@@ -118,7 +157,7 @@ namespace EasyPeasy.Client.Implementation
             request.ContentType  = this.Consumes;
             request.Accept = this.Produces;
 
-            foreach (var kv in this.Headers.Where(kv => kv.Value != null && kv.Key != null))
+            foreach (var kv in this.headerParameters.Where(kv => kv.Value != null && kv.Key != null))
             {
                 // WebRequest throws exceptions if the Accept and Content-Type headers are set indirectly,
                 // so need to check for these explicitly and set the associated properties if found
@@ -136,7 +175,15 @@ namespace EasyPeasy.Client.Implementation
                 }
             }
 
-            if (this.RequestBody != null)
+            // Choose between form parameters and a body - cannot have both
+            if (this.formParameters.Count > 0)
+            {
+                Stream requestStream = request.GetRequestStream();
+                StreamWriter writer = new StreamWriter(requestStream);
+                writer.Write(this.formParameters.ToString());
+                writer.Flush();
+            }
+            else if (this.RequestBody != null)
             {
                 IMediaTypeHandler handler;
                 if (mediaRegistry.TryGetHandler(this.RequestBody.GetType(), this.Consumes, out handler))
@@ -157,18 +204,14 @@ namespace EasyPeasy.Client.Implementation
         {
             Path endpoint = new Path(this.ServicePath).Append(new Path(this.MethodPath));
 
-            Path specializedPath = endpoint.ReplacePathVariables(this.PathParameters);
+            Path specializedPath = endpoint.ReplacePathVariables(this.pathParameters);
 
-            QueryString qs =
-                QueryString.Create().AddAll(
-                    this.QueryParameters
-                        .Where(kv => kv.Key != null && kv.Value != null)
-                        .Select(kv => Tuple.Create(kv.Key, kv.Value.ToString())));
+            string queryString = this.queryParameters.ToString();
 
             UriBuilder builder = new UriBuilder(baseUri);
 
             builder.Path = specializedPath.FullPath;
-            builder.Query = qs.ToString();
+            builder.Query = queryString;
 
             return builder.Uri;
         }

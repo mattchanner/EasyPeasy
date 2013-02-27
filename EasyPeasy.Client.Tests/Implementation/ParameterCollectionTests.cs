@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="QueryStringTests.cs">
+// <copyright file="ParameterCollectionTests.cs">
 //
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
@@ -33,10 +33,10 @@ using NUnit.Framework;
 namespace EasyPeasy.Client.Tests.Implementation
 {
     /// <summary>
-    /// A set of unit tests for the <see cref="QueryString"/> class.
+    /// A set of unit tests for the <see cref="ParameterCollectionTests"/> class.
     /// </summary>
     [TestFixture]
-    public class QueryStringTests
+    public class ParameterCollectionTests
     {
         /// <summary>
         /// The can_add_string_parameter.
@@ -44,7 +44,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void Can_add_string_parameter()
         {
-            string queryString = QueryString.Create().Add("param1", "value1").ToString();
+            string queryString = ParameterCollection.Create().Add("param1", "value1").ToString();
             Assert.That(queryString, Is.EqualTo("param1=value1"));
         }
 
@@ -54,7 +54,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void Can_add_two_parameters()
         {
-            string queryString = QueryString.Create().Add("param1", "value1").Add("param2", "value2").ToString();
+            string queryString = ParameterCollection.Create().Add("param1", "value1").Add("param2", "value2").ToString();
             Assert.That(queryString, Is.EqualTo("param1=value1&param2=value2"));
         }
 
@@ -64,7 +64,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void Can_add_boolean_parameter()
         {
-            string queryString = QueryString.Create().Add("param1", true).Add("param2", false).ToString();
+            string queryString = ParameterCollection.Create().Add("param1", true).Add("param2", false).ToString();
             Assert.That(queryString, Is.EqualTo("param1=true&param2=false"));
         }
 
@@ -75,7 +75,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(ArgumentNullException))]
         public void Null_param_name_throws_argument_null_exception()
         {
-            QueryString.Create().Add(null, "value");
+            ParameterCollection.Create().Add(null, "value");
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(ArgumentException))]
         public void Empty_param_name_throws_argument_exception()
         {
-            QueryString.Create().Add(string.Empty, "value");
+            ParameterCollection.Create().Add(string.Empty, "value");
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(ArgumentNullException))]
         public void Null_param_name_with_bool_value_throws_argument_null_exception()
         {
-            QueryString.Create().Add(null, true);
+            ParameterCollection.Create().Add(null, true);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(ArgumentException))]
         public void Empty_param_name_with_bool_value_throws_argument_exception()
         {
-            QueryString.Create().Add(string.Empty, true);
+            ParameterCollection.Create().Add(string.Empty, true);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(ArgumentNullException))]
         public void Null_value_throws_argument_null_execption()
         {
-            QueryString.Create().Add("param1", null);
+            ParameterCollection.Create().Add("param1", null);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(ArgumentException))]
         public void Empty_value_throws_argument_execption()
         {
-            QueryString.Create().Add("param1", string.Empty);
+            ParameterCollection.Create().Add("param1", string.Empty);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void MaybeAdd_does_nothing_with_null_value()
         {
-            string queryString = QueryString.Create().MaybeAdd("param", null).ToString();
+            string queryString = ParameterCollection.Create().MaybeAdd("param", null).ToString();
             Assert.That(queryString, Is.EqualTo(string.Empty));
         }
 
@@ -144,7 +144,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void MaybeAdd_does_nothing_with_empty_value()
         {
-            string queryString = QueryString.Create().MaybeAdd("param", string.Empty).ToString();
+            string queryString = ParameterCollection.Create().MaybeAdd("param", string.Empty).ToString();
             Assert.That(queryString, Is.EqualTo(string.Empty));
         }
 
@@ -155,7 +155,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void Empty_query_string_list_returns_empty_string()
         {
-            Assert.That(QueryString.Create().ToString(), Is.Empty);
+            Assert.That(ParameterCollection.Create().ToString(), Is.Empty);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [Test]
         public void AppendTo_appends_question_mark_to_input_string()
         {
-            string fullString = QueryString.Create().Add("p", "1").Add("p2", "2").AppendToPath("http://example.com");
+            string fullString = ParameterCollection.Create().Add("p", "1").Add("p2", "2").AppendToPath("http://example.com");
             Assert.That(fullString, Is.EqualTo("http://example.com?p=1&p2=2"));
         }
 
@@ -176,7 +176,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         [ExpectedException(typeof(DuplicateKeyException))]
         public void Adding_The_Same_Parameter_Twice_Throws_DuplicateKeyException()
         {
-            QueryString.Create().Add("p", true).Add("p", false);
+            ParameterCollection.Create().Add("p", true).Add("p", false);
         }
     }
 }
