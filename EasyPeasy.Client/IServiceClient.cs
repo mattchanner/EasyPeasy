@@ -25,6 +25,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace EasyPeasy.Client
@@ -35,6 +36,15 @@ namespace EasyPeasy.Client
     /// </summary>
     public interface IServiceClient
     {
+        /// <summary> Raised once a request is constructed, and before it is sent. </summary>
+        event EventHandler<WebRequestEventArgs> BeforeSend;
+
+        /// <summary> Raised once a response has been received. </summary>
+        event EventHandler<WebResponseEventArgs> ResponseReceived;
+
+        /// <summary> Raised when an exception is returned by the server </summary>
+        event EventHandler<WebExceptionEventArgs> ExceptionReceived;
+
         /// <summary>
         /// Gets or sets the base URI to use for each service method
         /// </summary>

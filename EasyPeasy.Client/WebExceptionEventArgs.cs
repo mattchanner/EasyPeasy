@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ByteArrayTypeHandler.cs">
+// <copyright file="WebExceptionEventArgs.cs">
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
 //    
@@ -24,53 +24,27 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Net;
 
-namespace EasyPeasy.Client.Codecs
+namespace EasyPeasy.Client
 {
     /// <summary>
-    /// A type handler for byte arrays.
+    /// The web exception event args.
     /// </summary>
-    internal class ByteArrayTypeHandler : IMediaTypeHandler
+    public class WebExceptionEventArgs : EventArgs
     {
-        /// <summary> The buffer size. </summary>
-        private const int BufferSize = 16 * 1024;
-
         /// <summary>
-        /// When called, this method is responsible for writing the value to the stream
+        /// Initializes a new instance of the <see cref="WebExceptionEventArgs"/> class.
         /// </summary>
-        /// <param name="request">The web request being written to </param>
-        /// <param name="value">The value to write</param>
-        /// <param name="body">The stream to write to</param>
-        public void WriteObject(WebRequest request, object value, Stream body)
+        /// <param name="exception"> The exception. </param>
+        public WebExceptionEventArgs(WebException exception)
         {
-            byte[] bytes = (byte[])value;
-            body.Write(bytes, 0, bytes.Length);
+            Exception = exception;
         }
 
         /// <summary>
-        /// When called, this method is responsible for reading the contents of the body stream in order
-        /// to generate a response of the type appropriate for the defined media type.
+        /// Gets the exception.
         /// </summary>
-        /// <param name="response"> The response being read from. </param>
-        /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The type to de-serialize.  </param>
-        /// <returns> The <see cref="object"/> read from the stream.   </returns>
-        public object ReadObject(WebResponse response, Stream body, Type objectType)
-        {
-            MemoryStream buffer = new MemoryStream();
-            
-            byte[] bytes = new byte[BufferSize];
-
-            int bytesRead;
-
-            while ((bytesRead = body.Read(bytes, 0, BufferSize)) > 0)
-            {
-                buffer.Write(bytes, 0, bytesRead);
-            }
-
-            return buffer.ToArray();
-        }
+        public WebException Exception { get; private set; }
     }
 }

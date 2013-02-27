@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ByteArrayTypeHandler.cs">
+// <copyright file="AutoUnregisterToken.cs">
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
 //    
@@ -24,53 +24,41 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
-using System.Net;
 
-namespace EasyPeasy.Client.Codecs
+namespace EasyPeasy.Client.Implementation
 {
     /// <summary>
-    /// A type handler for byte arrays.
+    /// Instances of this class will unregister an interceptor from the supplied factory when the Dispose method is called.
     /// </summary>
-    internal class ByteArrayTypeHandler : IMediaTypeHandler
+    internal class AutoUnregisterToken : IDisposable
     {
-        /// <summary> The buffer size. </summary>
-        private const int BufferSize = 16 * 1024;
+        /// <summary> The factory to remove from. </summary>
+        private readonly IEasyPeasyFactory factory;
+
+        /// <summary> The interceptor to remove. </summary>
+        private readonly IRequestInterceptor interceptor;
 
         /// <summary>
-        /// When called, this method is responsible for writing the value to the stream
+        /// Initializes a new instance of the <see cref="AutoUnregisterToken"/> class.
         /// </summary>
-        /// <param name="request">The web request being written to </param>
-        /// <param name="value">The value to write</param>
-        /// <param name="body">The stream to write to</param>
-        public void WriteObject(WebRequest request, object value, Stream body)
+        /// <param name="factory"> The factory to unregister from. </param>
+        /// <param name="interceptor"> The interceptor to remove on dispose. </param>
+        public AutoUnregisterToken(IEasyPeasyFactory factory, IRequestInterceptor interceptor)
         {
-            byte[] bytes = (byte[])value;
-            body.Write(bytes, 0, bytes.Length);
+            Ensure.IsNotNull(factory, "factory");
+            Ensure.IsNotNull(interceptor, "interceptor");
+
+            this.factory = factory;
+            this.interceptor = interceptor;
         }
 
         /// <summary>
-        /// When called, this method is responsible for reading the contents of the body stream in order
-        /// to generate a response of the type appropriate for the defined media type.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="response"> The response being read from. </param>
-        /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The type to de-serialize.  </param>
-        /// <returns> The <see cref="object"/> read from the stream.   </returns>
-        public object ReadObject(WebResponse response, Stream body, Type objectType)
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
         {
-            MemoryStream buffer = new MemoryStream();
-            
-            byte[] bytes = new byte[BufferSize];
-
-            int bytesRead;
-
-            while ((bytesRead = body.Read(bytes, 0, BufferSize)) > 0)
-            {
-                buffer.Write(bytes, 0, bytesRead);
-            }
-
-            return buffer.ToArray();
+            factory.RemoveInterceptor(interceptor);
         }
     }
 }

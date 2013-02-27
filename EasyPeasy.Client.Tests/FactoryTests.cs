@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ByteArrayTypeHandler.cs">
+// <copyright file="FactoryTests.cs">
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
 //    
@@ -21,56 +21,46 @@
 //     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 //     THE SOFTWARE.
 // </copyright>
+// <summary>
+//   A set of tests for the basic functionality of the factory
+// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
-using System.Net;
 
-namespace EasyPeasy.Client.Codecs
+using EasyPeasy.Client.Tests.TestTypes;
+
+using NUnit.Framework;
+
+namespace EasyPeasy.Client.Tests
 {
     /// <summary>
-    /// A type handler for byte arrays.
+    /// A set of tests for the basic functionality of the factory
     /// </summary>
-    internal class ByteArrayTypeHandler : IMediaTypeHandler
+    [TestFixture]
+    public class FactoryTests
     {
-        /// <summary> The buffer size. </summary>
-        private const int BufferSize = 16 * 1024;
-
         /// <summary>
-        /// When called, this method is responsible for writing the value to the stream
+        /// The factory_is_preconfigured_with_handlers.
         /// </summary>
-        /// <param name="request">The web request being written to </param>
-        /// <param name="value">The value to write</param>
-        /// <param name="body">The stream to write to</param>
-        public void WriteObject(WebRequest request, object value, Stream body)
+        [Test]
+        public void Factory_is_preconfigured_with_handlers()
         {
-            byte[] bytes = (byte[])value;
-            body.Write(bytes, 0, bytes.Length);
+            EasyPeasyFactory factory = new EasyPeasyFactory();
+            IMediaTypeHandler _;
+            Assert.That(factory.Registry.TryGetHandler(typeof(string), MediaType.TextPlain, out _), Is.True);
         }
 
         /// <summary>
-        /// When called, this method is responsible for reading the contents of the body stream in order
-        /// to generate a response of the type appropriate for the defined media type.
+        /// Verifies an interceptor can be registered without error
         /// </summary>
-        /// <param name="response"> The response being read from. </param>
-        /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The type to de-serialize.  </param>
-        /// <returns> The <see cref="object"/> read from the stream.   </returns>
-        public object ReadObject(WebResponse response, Stream body, Type objectType)
+        [Test]
+        public void Can_register_request_interceptor()
         {
-            MemoryStream buffer = new MemoryStream();
-            
-            byte[] bytes = new byte[BufferSize];
-
-            int bytesRead;
-
-            while ((bytesRead = body.Read(bytes, 0, BufferSize)) > 0)
-            {
-                buffer.Write(bytes, 0, bytesRead);
-            }
-
-            return buffer.ToArray();
+            EasyPeasyFactory factory = new EasyPeasyFactory();
+            IDisposable token = factory.AddInterceptor(new RecordingInterceptor());
+            Assert.That(token, Is.Not.Null);
+            token.Dispose();
         }
     }
 }

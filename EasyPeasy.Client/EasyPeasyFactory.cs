@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -77,11 +78,16 @@ namespace EasyPeasy.Client
         /// <summary> The registry of serialization types. </summary>
         private readonly IMediaTypeHandlerRegistry registry;
 
+        /// <summary> The request interceptors. </summary>
+        private IList<IRequestInterceptor> interceptors;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
         /// </summary>
         public EasyPeasyFactory()
         {
+            interceptors = new List<IRequestInterceptor>();
+
             registry = new DefaultMediaTypeRegistry();
 
             registry.RegisterMediaTypeHandler(MediaType.ApplicationXml,  new XmlMediaTypeHandler());
@@ -138,6 +144,39 @@ namespace EasyPeasy.Client
         }
 
         /// <summary>
+        /// Adds an interceptor to be notified when a request is sent and a response received
+        /// </summary>
+        /// <param name="interceptor">The interceptor to add</param>
+        /// <returns>A token that automatically unregisters the interceptor when it is disposed</returns>
+        public IDisposable AddInterceptor(IRequestInterceptor interceptor)
+        {
+            Ensure.IsNotNull(interceptor, "interceptor");
+            
+            this.RemoveInterceptor(interceptor);
+
+            lock (Locker)
+            {
+                interceptors.Add(interceptor);
+            }
+
+            return new AutoUnregisterToken(this, interceptor);
+        }
+
+        /// <summary>
+        /// Removes an interceptor from the factory
+        /// </summary>
+        /// <param name="interceptor">The interceptor to remove</param>
+        public void RemoveInterceptor(IRequestInterceptor interceptor)
+        {
+            Ensure.IsNotNull(interceptor, "interceptor");
+
+            lock (Locker)
+            {
+                interceptors.Remove(interceptor);
+            }
+        }
+
+        /// <summary>
         /// Creates a new implementation of the given service type, or returns an existing one if the
         /// type has previously been proxied.
         /// </summary>
@@ -166,6 +205,7 @@ namespace EasyPeasy.Client
             lock (Locker)
             {
                 string implementationName = serviceType.Name + "<Impl>";
+
                 Type implementationType = CachedTypes.GetOrAdd(
                     implementationName, _ => CreateProxyCore(serviceType, implementationName));
 
@@ -176,10 +216,14 @@ namespace EasyPeasy.Client
                 service = (TService)ctor.Invoke(Type.EmptyTypes);
 
                 IServiceClient serviceClient = (IServiceClient)service;
+
                 serviceClient.BaseUri = baseUri;
                 serviceClient.Credentials = credentials;
-
                 serviceClient.MediaRegistry = registry;
+
+                serviceClient.BeforeSend += ServiceClientOnBeforeSend;
+                serviceClient.ExceptionReceived += ServiceClientOnExceptionReceived;
+                serviceClient.ResponseReceived += ServiceClientOnResponseReceive;
             }
 
             return service;
@@ -188,14 +232,12 @@ namespace EasyPeasy.Client
         /// <summary>
         /// Saves the assembly to disk
         /// </summary>
-        /// <param name="assemblyPath">The path to save the assembly to</param>
-        public void SaveGeneratedAssembly(FileInfo assemblyPath)
+        /// <param name="fileName">The name of the file in the current directory to save the file to</param>
+        public void SaveGeneratedAssembly(string fileName)
         {
-            Ensure.IsNotNull(assemblyPath, "assemblyPath");
-            if (assemblyPath.Exists)
-                assemblyPath.Delete();
+            Ensure.IsNotNull(fileName, "fileName");
 
-            assemblyBuilder.Save(assemblyPath.Name);
+            assemblyBuilder.Save(fileName);
         }
 
         /// <summary>
@@ -266,8 +308,7 @@ namespace EasyPeasy.Client
 
             ILGenerator il = methodBuilder.GetILGenerator();
 
-            // Set up local variables
-            // resultLocal will hold the result of calling the base class method - this is not set
+            // Set up local variables resultLocal will hold the result of calling the base class method - this is not set
             // if the return type is void
             LocalBuilder resultLocal = returnType.IsVoid() ? null : il.DeclareLocal(returnType);
 
@@ -277,6 +318,7 @@ namespace EasyPeasy.Client
             il.Emit(OpCodes.Ldarg_0); // Load `this` onto the stack
 
             ConstructorInfo metaCtor = typeof(MethodMetadata).GetConstructor(Type.EmptyTypes);
+
             if (metaCtor != null)
             {
                 il.Emit(OpCodes.Newobj, metaCtor);
@@ -499,6 +541,55 @@ namespace EasyPeasy.Client
             ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, "DynamicServiceAssembly.dll");
 
             return Tuple.Create(asmBuilder, modBuilder);
+        }
+
+        /// <summary>
+        /// Consumes the ResponseReceived event from a service client.
+        /// </summary>
+        /// <param name="sender"> The event sender. </param>
+        /// <param name="args"> The web response event args. </param>
+        private void ServiceClientOnResponseReceive(object sender, WebResponseEventArgs args)
+        {
+            NotifyInterceptors(interceptor => interceptor.OnReceive(args.Response));
+        }
+
+        /// <summary>
+        /// Consumes the ExceptionReceived event from a service client.
+        /// </summary>
+        /// <param name="sender"> The event sender. </param>
+        /// <param name="args"> The web exception event args. </param>
+        private void ServiceClientOnExceptionReceived(object sender, WebExceptionEventArgs args)
+        {
+            NotifyInterceptors(interceptor => interceptor.OnError(args.Exception));
+        }
+
+        /// <summary>
+        /// Consumes the BeforeSend event from a service client.
+        /// </summary>
+        /// <param name="sender"> The event sender. </param>
+        /// <param name="args"> The web request event args. </param>
+        private void ServiceClientOnBeforeSend(object sender, WebRequestEventArgs args)
+        {
+            NotifyInterceptors(interceptor => interceptor.OnBeforeSend(args.Request));
+        }
+
+        /// <summary>
+        /// Invoked command on each attached interceptor.
+        /// </summary>
+        /// <param name="command"> The command to invoke. </param>
+        private void NotifyInterceptors(Action<IRequestInterceptor> command)
+        {
+            IRequestInterceptor[] receivers;
+
+            lock (Locker)
+            {
+                receivers = interceptors.ToArray();
+            }
+
+            foreach (IRequestInterceptor interceptor in receivers)
+            {
+                command(interceptor);
+            }
         }
     }
 }

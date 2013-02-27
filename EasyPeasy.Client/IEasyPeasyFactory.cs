@@ -25,7 +25,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Net;
 
 namespace EasyPeasy.Client
@@ -41,6 +40,19 @@ namespace EasyPeasy.Client
         /// across the wire
         /// </summary>
         IMediaTypeHandlerRegistry Registry { get; }
+
+        /// <summary>
+        /// Adds an interceptor to be notified when a request is sent and a response received
+        /// </summary>
+        /// <param name="interceptor">The interceptor to add</param>
+        /// <returns>A token that automatically unregisters the interceptor when it is disposed</returns>
+        IDisposable AddInterceptor(IRequestInterceptor interceptor);
+
+        /// <summary>
+        /// Removes an interceptor from the factory
+        /// </summary>
+        /// <param name="interceptor">The interceptor to remove</param>
+        void RemoveInterceptor(IRequestInterceptor interceptor);
 
         /// <summary>
         /// Creates a new implementation of the given service type, or returns an existing one if the
@@ -61,7 +73,7 @@ namespace EasyPeasy.Client
         /// <summary>
         /// Saves the generated assembly to disk
         /// </summary>
-        /// <param name="assemblyFile"> The location of the assembly to be saved </param>
-        void SaveGeneratedAssembly(FileInfo assemblyFile);
+        /// <param name="fileName"> The name of the file to save</param>
+        void SaveGeneratedAssembly(string fileName);
     }
 }

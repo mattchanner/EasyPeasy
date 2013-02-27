@@ -55,8 +55,6 @@ namespace EasyPeasy.Client.Implementation
                     CallingConventions.Standard,
                     Type.EmptyTypes);
 
-            // Get the protected constructor on the rest client that takes in the
-            // path attribute as an argument
             ConstructorInfo baseConstructor = baseClass.GetConstructor(
                 BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
                 null,
@@ -129,8 +127,8 @@ namespace EasyPeasy.Client.Implementation
             string dictionaryKey,
             ParameterInfo parameter)
         {
-            Type headerDictType = typeof(IDictionary<string, object>);
-            MethodInfo addMethod = headerDictType.GetMethod("Add");
+            Type dictType = typeof(IDictionary<string, object>);
+            MethodInfo addMethod = dictType.GetMethod("Add");
 
             MethodInfo getter = parentType.GetProperty(propertyName).GetGetMethod();
 

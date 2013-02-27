@@ -50,6 +50,7 @@
     <Compile Include="Codecs\JsonMediaTypeHandlerTests.cs" />
     <Compile Include="Codecs\PlainTextMediaTypeHandlerTests.cs" />
     <Compile Include="Codecs\XmlMediaTypeHandlerTests.cs" />
+    <Compile Include="FactoryTests.cs" />
     <Compile Include="Implementation\MethodMetadataTests.cs" />
     <Compile Include="Implementation\PathTests.cs" />
     <Compile Include="Implementation\QueryStringTests.cs" />
@@ -60,6 +61,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TestTypes\CollectionDto.cs" />
+    <Compile Include="TestTypes\RecordingInterceptor.cs" />
     <Compile Include="TestTypes\SimpleDto.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +71,10 @@
     <ProjectReference Include="..\EasyPeasy.Client\EasyPeasy.Client.csproj">
       <Project>{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}</Project>
       <Name>EasyPeasy.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyPeasy\EasyPeasy.csproj">
+      <Project>{A15BD7EB-757D-451A-839D-F9BC358A86DF}</Project>
+      <Name>EasyPeasy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

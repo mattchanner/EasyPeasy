@@ -47,6 +47,21 @@ namespace EasyPeasy.Client.Implementation
             this.Timeout = TimeSpan.FromMilliseconds(DefaultTimeoutMs);
         }
 
+        /// <summary> 
+        /// Raised before the request is sent 
+        /// </summary>
+        public event EventHandler<WebRequestEventArgs> BeforeSend;
+
+        /// <summary> 
+        /// Raised after a response is received 
+        /// </summary>
+        public event EventHandler<WebResponseEventArgs> ResponseReceived;
+
+        /// <summary> 
+        /// Raised when an exception is received 
+        /// </summary>
+        public event EventHandler<WebExceptionEventArgs> ExceptionReceived;
+
         /// <summary>
         /// Gets or sets the amount of time to wait for a synchronous request before timing out
         /// </summary>
@@ -86,6 +101,7 @@ namespace EasyPeasy.Client.Implementation
             return task.ContinueWith(t =>
                 {
                     CheckTaskForException(t);
+                    this.OnResponseReceived(new WebResponseEventArgs(task.Result));
                     return (T)handler.ReadObject(t.Result, t.Result.GetResponseStream(), typeof(T));
                 });
         }
@@ -98,7 +114,12 @@ namespace EasyPeasy.Client.Implementation
         /// <returns> The raw web response. </returns>
         protected Task<WebResponse> AsyncRequestWithRawResponse(MethodMetadata methodProperties)
         {
-            return CreateRequest(methodProperties);
+            return CreateRequest(methodProperties).ContinueWith(task =>
+                {
+                    this.CheckTaskForException(task);
+                    this.OnResponseReceived(new WebResponseEventArgs(task.Result));
+                    return task.Result;
+                });
         }
 
         /// <summary>
@@ -110,7 +131,11 @@ namespace EasyPeasy.Client.Implementation
         /// calling the service. </returns>
         protected Task AsyncVoidRequest(MethodMetadata methodProperties)
         {
-            return CreateRequest(methodProperties);
+            return CreateRequest(methodProperties).ContinueWith(task =>
+                {
+                    this.CheckTaskForException(task);
+                    this.OnResponseReceived(new WebResponseEventArgs(task.Result));
+                });
         }
 
         /// <summary>
@@ -139,8 +164,12 @@ namespace EasyPeasy.Client.Implementation
         protected WebResponse SyncRequestWithRawResponse(MethodMetadata methodProperties)
         {
             Task<WebResponse> task = CreateRequest(methodProperties);
-            task.Wait(Timeout);
+            
+            if (!task.Wait(Timeout))
+                throw new TimeoutException();
+
             CheckTaskForException(task);
+            this.OnResponseReceived(new WebResponseEventArgs(task.Result));
 
             return task.Result;
         }
@@ -153,8 +182,52 @@ namespace EasyPeasy.Client.Implementation
         protected void SyncVoidRequest(MethodMetadata methodProperties)
         {
             Task<WebResponse> task = CreateRequest(methodProperties);
-            task.Wait(Timeout);
+
+            if (!task.Wait(Timeout))
+                throw new TimeoutException();
+            
             CheckTaskForException(task);
+            if (task.IsCompleted)
+                this.OnResponseReceived(new WebResponseEventArgs(task.Result));
+        }
+
+        /// <summary>
+        /// Raises the <see cref="IServiceClient.BeforeSend"/> event.
+        /// </summary>
+        /// <param name="args"> The event arguments. </param>
+        protected virtual void OnBeforeSend(WebRequestEventArgs args)
+        {
+            var evt = BeforeSend;
+            if (evt != null)
+            {
+                evt(this, args);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="IServiceClient.ResponseReceived"/> event.
+        /// </summary>
+        /// <param name="args"> The event arguments. </param>
+        protected virtual void OnResponseReceived(WebResponseEventArgs args)
+        {
+            var evt = ResponseReceived;
+            if (evt != null)
+            {
+                evt(this, args);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="IServiceClient.ExceptionReceived"/> event.
+        /// </summary>
+        /// <param name="args"> The event arguments. </param>
+        protected virtual void OnExceptionReceived(WebExceptionEventArgs args)
+        {
+            var evt = ExceptionReceived;
+            if (evt != null)
+            {
+                evt(this, args);
+            }
         }
 
         /// <summary>
@@ -166,7 +239,14 @@ namespace EasyPeasy.Client.Implementation
         {
             if (task.Exception != null)
             {
-                throw task.Exception.Flatten();
+                AggregateException exception = task.Exception.Flatten();
+
+                WebException webException = exception.InnerException as WebException;
+
+                if (webException != null)
+                    this.OnExceptionReceived(new WebExceptionEventArgs(webException));
+
+                throw exception;
             }
         }
 
@@ -178,6 +258,10 @@ namespace EasyPeasy.Client.Implementation
         private Task<WebResponse> CreateRequest(MethodMetadata methodProperties)
         {
             WebRequest request = methodProperties.CreateRequest(this.BaseUri, this.Credentials, this.MediaRegistry);
+            
+            // Raise event to callers that the request has been created
+            this.OnBeforeSend(new WebRequestEventArgs(request));
+
             return Task<WebResponse>.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
         }
     }

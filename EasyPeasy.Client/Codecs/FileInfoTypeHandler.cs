@@ -40,7 +40,7 @@ namespace EasyPeasy.Client.Codecs
     /// <summary>
     /// Represents a <see cref="IMediaTypeHandler"/> for <see cref="FileInfo"/> types.
     /// </summary>
-    public class FileInfoTypeHandler : IMediaTypeHandler
+    internal class FileInfoTypeHandler : IMediaTypeHandler
     {
         /// <summary> The template to use for each form item sent when uploading a file </summary>
         private const string FormdataTemplate = "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}";
