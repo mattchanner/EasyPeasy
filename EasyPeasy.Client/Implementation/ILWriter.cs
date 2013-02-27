@@ -111,30 +111,14 @@ namespace EasyPeasy.Client.Implementation
         }
 
         /// <summary>
-        /// Adds a query parameter to the collection
+        /// Adds a parameter to the meta data instance
         /// </summary>
         /// <param name="il"> The ILGenerator. </param>
+        /// <param name="methodName">The method name</param>
         /// <param name="local"> The local reference to the meta data instance. </param>
         /// <param name="parentType"> The parent type. </param>
         /// <param name="parameterName"> The parameter name. </param>
         /// <param name="parameter"> The parameter. </param>
-        public static void AddQueryParam(
-            ILGenerator il, 
-            LocalBuilder local, 
-            Type parentType, 
-            string parameterName, 
-            ParameterInfo parameter)
-        {
-            MethodInfo method = parentType.GetMethod("AddQueryParameter");
-            il.Emit(OpCodes.Ldloc, local);
-            il.Emit(OpCodes.Ldstr, parameterName);
-            il.Emit(OpCodes.Ldarg, parameter.Position + 1);
-            if (parameter.ParameterType.IsValueType)
-                il.Emit(OpCodes.Box, parameter.ParameterType);
-
-            il.Emit(OpCodes.Callvirt, method);
-        }
-
         public static void AddParameter(
             ILGenerator il,
             string methodName,
@@ -144,34 +128,11 @@ namespace EasyPeasy.Client.Implementation
             ParameterInfo parameter)
         {
             MethodInfo method = parentType.GetMethod(methodName);
+
             il.Emit(OpCodes.Ldloc, local);
             il.Emit(OpCodes.Ldstr, parameterName);
             il.Emit(OpCodes.Ldarg, parameter.Position + 1);
-            if (parameter.ParameterType.IsValueType)
-                il.Emit(OpCodes.Box, parameter.ParameterType);
 
-            il.Emit(OpCodes.Callvirt, method);
-        }
-
-        /// <summary>
-        /// Adds a query parameter to the collection
-        /// </summary>
-        /// <param name="il"> The ILGenerator. </param>
-        /// <param name="local"> The local reference to the meta data instance. </param>
-        /// <param name="parentType"> The parent type. </param>
-        /// <param name="parameterName"> The parameter name. </param>
-        /// <param name="parameter"> The parameter. </param>
-        public static void AddFormParam(
-            ILGenerator il,
-            LocalBuilder local,
-            Type parentType,
-            string parameterName,
-            ParameterInfo parameter)
-        {
-            MethodInfo method = parentType.GetMethod("AddFormParameter");
-            il.Emit(OpCodes.Ldloc, local);
-            il.Emit(OpCodes.Ldstr, parameterName);
-            il.Emit(OpCodes.Ldarg, parameter.Position + 1);
             if (parameter.ParameterType.IsValueType)
                 il.Emit(OpCodes.Box, parameter.ParameterType);
 

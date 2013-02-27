@@ -91,7 +91,7 @@ namespace EasyPeasy.Client.Implementation
 
             // Unpack sequences and add items individually
             IEnumerable valueSequence = paramValue as IEnumerable;
-            if (valueSequence != null)
+            if (valueSequence != null && !(paramValue is string))
             {
                 foreach (object value in valueSequence) valueList.Add(value);
             }
