@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EasyPeasy.Client</RootNamespace>
+    <AssemblyName>EasyPeasy.Client</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Codecs\ByteArrayTypeHandler.cs" />
+    <Compile Include="Codecs\FileInfoTypeHandler.cs" />
+    <Compile Include="Codecs\ImageMediaTypeHandler.cs" />
+    <Compile Include="Codecs\JsonMediaTypeHandler.cs" />
+    <Compile Include="Codecs\PlainTextMediaTypeHandler.cs" />
+    <Compile Include="Codecs\ValueTypeHandler.cs" />
+    <Compile Include="Codecs\XmlMediaTypeHandler.cs" />
+    <Compile Include="EasyPeasyException.cs" />
+    <Compile Include="IEasyPeasyFactory.cs" />
+    <Compile Include="IHttpRequest.cs" />
+    <Compile Include="Implementation\AutoUnregisterToken.cs" />
+    <Compile Include="Implementation\ParameterCollection.cs" />
+    <Compile Include="IRequestInterceptor.cs" />
+    <Compile Include="IMediaTypeHandler.cs" />
+    <Compile Include="IMediaTypeHandlerRegistry.cs" />
+    <Compile Include="DefaultMediaTypeRegistry.cs" />
+    <Compile Include="DuplicateKeyException.cs" />
+    <Compile Include="EasyPeasyFactory.cs" />
+    <Compile Include="Implementation\Ensure.cs" />
+    <Compile Include="Implementation\HttpVerb.cs" />
+    <Compile Include="Implementation\ILWriter.cs" />
+    <Compile Include="Implementation\MethodMetadata.cs" />
+    <Compile Include="Implementation\Path.cs" />
+    <Compile Include="Implementation\ReflectionUtils.cs" />
+    <Compile Include="Implementation\ServiceClient.cs" />
+    <Compile Include="IServiceClient.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="WebExceptionEventArgs.cs" />
+    <Compile Include="WebRequestEventArgs.cs" />
+    <Compile Include="WebResponseEventArgs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasyPeasy\EasyPeasy.csproj">
+      <Project>{A15BD7EB-757D-451A-839D-F9BC358A86DF}</Project>
+      <Name>EasyPeasy</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

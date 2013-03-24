@@ -1,13 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Example", "EasyPeasy.Example\EasyPeasy.Example.csproj", "{094D70C0-174C-496D-AE16-24101FC577D4}"
+# Visual Studio Express 2012 for Web
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Example.Client", "examples\EasyPeasy.Example\EasyPeasy.Example.Client.csproj", "{094D70C0-174C-496D-AE16-24101FC577D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy", "EasyPeasy\EasyPeasy.csproj", "{A15BD7EB-757D-451A-839D-F9BC358A86DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy", "src\EasyPeasy\EasyPeasy.csproj", "{A15BD7EB-757D-451A-839D-F9BC358A86DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Client", "EasyPeasy.Client\EasyPeasy.Client.csproj", "{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Client", "src\EasyPeasy.Client\EasyPeasy.Client.csproj", "{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Client.Tests", "EasyPeasy.Client.Tests\EasyPeasy.Client.Tests.csproj", "{9BF752BE-CD37-475D-AA65-962E457629C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Client.Tests", "tests\EasyPeasy.Client.Tests\EasyPeasy.Client.Tests.csproj", "{9BF752BE-CD37-475D-AA65-962E457629C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Example.Models", "examples\EasyPeasy.Example.Models\EasyPeasy.Example.Models.csproj", "{0E7FB48B-A790-4856-95B6-BF98FADACF49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02E43793-05F5-48DE-B318-CDFE1C17DEF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{ABCD7D4F-3651-4513-9D84-70506BA6BDF1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A4F0DB8E-E0CF-437F-8DD8-D5220812B415}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyPeasy.Example.Services", "examples\EasyPeasy.Example.Services\EasyPeasy.Example.Services.csproj", "{8BC00F11-9577-4E5A-B008-BEAB46380B48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,8 +69,36 @@ Global
 		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9BF752BE-CD37-475D-AA65-962E457629C3}.Release|x86.ActiveCfg = Release|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49}.Release|x86.ActiveCfg = Release|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0E7FB48B-A790-4856-95B6-BF98FADACF49} = {ABCD7D4F-3651-4513-9D84-70506BA6BDF1}
+		{094D70C0-174C-496D-AE16-24101FC577D4} = {ABCD7D4F-3651-4513-9D84-70506BA6BDF1}
+		{8BC00F11-9577-4E5A-B008-BEAB46380B48} = {ABCD7D4F-3651-4513-9D84-70506BA6BDF1}
+		{80271DB9-4B5F-4F0A-9B64-7FCB85BFD2CA} = {02E43793-05F5-48DE-B318-CDFE1C17DEF2}
+		{A15BD7EB-757D-451A-839D-F9BC358A86DF} = {02E43793-05F5-48DE-B318-CDFE1C17DEF2}
+		{9BF752BE-CD37-475D-AA65-962E457629C3} = {A4F0DB8E-E0CF-437F-8DD8-D5220812B415}
 	EndGlobalSection
 EndGlobal
