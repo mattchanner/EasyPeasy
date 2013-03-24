@@ -3,7 +3,7 @@ Monokai style - ported by Luigi Maselli - http://grigio.org
 */
 
 pre code {
-  display: block; padding: 0.5em;
+  display: block; padding: 0.5em; margin: 0;
   background: #272822;
 }
 
