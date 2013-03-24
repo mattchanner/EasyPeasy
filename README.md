@@ -24,11 +24,24 @@ Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki
 
         [DELETE, Path("/{name}")]
         Task DeleteCustomerAsync([PathParam("name")] string name, [QueryParam("q")] bool q);
+
+        [PUT, Path("/{name}"), Consumes(MediaType.ApplicationUrlEncoded)]
+        void UpdateCustomer([PathParam("name")] string name, [FormParam("address")] string address);
     }
 
 The proxy type can then be created simply by calling:
 
-    IEasyPeasyFactory factory = new EasyPeasyFactory();
+    IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
+    ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
+    Customer customer = client.GetCustomer("My Customer");
+
+Or, using MEF:
+
+    AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
+    CompositionContainer container = new CompositionContainer(catalog);
+
+    IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
+
     ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
     Customer customer = client.GetCustomer("My Customer");
 
@@ -44,14 +57,13 @@ In addition, further attributes to method parameters to pull information out of 
 * [PathParam] binds the parameter to a path segment
 * [QueryParam] binds the parameter to the value of an HTTP query parameter
 * [HeaderParam] binds the parameter to an HTTP header value.
+* [FormParam] binds the parameter to a form value
 
 ### Not yet implemented:
 
 * MatrixParam
 * CookieParam
-* FormParam
 * DefaultValue
-* MatrixParam
 
 ### Media Type encoding \ decoding
 
