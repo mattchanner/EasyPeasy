@@ -72,7 +72,20 @@ public interface ICustomerService
 <p>The proxy type can then be created simply by calling:</p>
 
 <pre><code>
-IEasyPeasyFactory factory = new EasyPeasyFactory();
+IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
+ICustomerService client = 
+    factory.Create&lt;ICustomerService&gt;(
+        new Uri("http://server.com"));
+Customer customer = client.GetCustomer("My Customer");
+</code></pre>
+
+<p>Using <a href="http://msdn.microsoft.com/en-us/library/dd460648.aspx"><acronym title="Microsoft Extensibility Framework">MEF</acronym></a>:</p>
+
+<pre><code>
+AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
+CompositionContainer container = new CompositionContainer(catalog);
+IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
+
 ICustomerService client = 
     factory.Create&lt;ICustomerService&gt;(
         new Uri("http://server.com"));
@@ -92,6 +105,7 @@ Customer customer = client.GetCustomer("My Customer");
 <li>[PathParam] binds the parameter to a path segment</li>
 <li>[QueryParam] binds the parameter to the value of an HTTP query parameter</li>
 <li>[HeaderParam] binds the parameter to an HTTP header value.</li>
+<li>[FormParam] binds the parameter to a form value.</li>
 </ul><h3>How it works</h3>
 
 <p>The ServiceProxy class uses reflection to scoop up information on the type you give it.  Reflection.Emit is then used to lovingly craft a new class to implement your interface.  The new class extends ServiceClient where most of the work takes place.  </p>
