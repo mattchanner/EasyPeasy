@@ -31,18 +31,18 @@ using System.Web.Http.Dispatcher;
 
 namespace EasyPeasy.Example.Server
 {
-	public class StartUp
-	{
-		public void Configuration(IAppBuilder appBuilder)
-		{
-			HttpConfiguration config = new HttpConfiguration ();
-			config.Routes.MapHttpRoute (
-				name: "DefaultRoute",
-				routeTemplate: "api/{controller}/{id}",
-				defaults: new { id = RouteParameter.Optional });
+    public class StartUp
+    {
+        public void Configuration(IAppBuilder appBuilder)
+        {
+            HttpConfiguration config = new HttpConfiguration ();
+            config.Routes.MapHttpRoute (
+                name: "DefaultRoute",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional });
 
-			appBuilder.UseWebApi (config);
-		}
-	}
+            appBuilder.UseWebApi (config);
+        }
+    }
 }
 

@@ -39,7 +39,7 @@ namespace EasyPeasy
         /// <summary> The main method. </summary>
         public static void Main()
         {
-			System.Threading.Thread.Sleep (2000);
+            System.Threading.Thread.Sleep (2000);
 
             Uri baseAddress = new Uri("http://localhost:9000");
 

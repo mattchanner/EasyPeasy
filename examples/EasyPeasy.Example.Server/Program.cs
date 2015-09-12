@@ -30,20 +30,20 @@ using Microsoft.Owin.Hosting;
 
 namespace EasyPeasy.Example.Server
 {
-	class MainClass
-	{
-		private const string BaseAddress = "http://localhost:9000/";
+    class MainClass
+    {
+        private const string BaseAddress = "http://localhost:9000/";
 
-		public static void Main (string[] args)
-		{
-			StartOptions options = new StartOptions ();
-			options.Urls.Add (BaseAddress);
+        public static void Main (string[] args)
+        {
+            StartOptions options = new StartOptions ();
+            options.Urls.Add (BaseAddress);
 
-			using (WebApp.Start<StartUp> (options))
-			{
-				Console.WriteLine ("Listening on {0}", BaseAddress);
-				Console.ReadKey ();
-			}
-		}
-	}
+            using (WebApp.Start<StartUp> (options))
+            {
+                Console.WriteLine ("Listening on {0}", BaseAddress);
+                Console.ReadKey ();
+            }
+        }
+    }
 }
