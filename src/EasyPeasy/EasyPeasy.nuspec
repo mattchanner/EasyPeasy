@@ -4,6 +4,7 @@
         <id>EasyPeasy</id>
         <version>0.1.0</version>
         <title>Matt Channer</title>
+        <authors>Matt Channer</authors>
         <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/mattchanner/EasyPeasy</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
