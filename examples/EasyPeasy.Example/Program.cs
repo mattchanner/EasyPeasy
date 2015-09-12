@@ -39,52 +39,75 @@ namespace EasyPeasy
         /// <summary> The main method. </summary>
         public static void Main()
         {
-            System.Threading.Thread.Sleep (2000);
-
             Uri baseAddress = new Uri("http://localhost:9000");
 
+            // The factory can be created using MEF, the following is an example of how
+            // you could do this:
             AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
             CompositionContainer container = new CompositionContainer(catalog);
 
             IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
+
+            // An alternative would be the more direct way:
+            // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
+
+            // Auto generate an implementation of the IContactService interface.
+            // The implementation is configured via the interface attributes to determine each
+            // methods end point, serialization formats etc.
             IContactService contactService = factory.Create<IContactService>(baseAddress);
 
-            try
+            // The following are examples of using the implementation
+
+
+            // 1 - fetch a list of contacts from the server and print them out
+            // This method call maps to:
+            // GET http://localhost:9000/api/contact
+            foreach (Contact contact in contactService.GetContacts())
             {
-                foreach (Contact contact in contactService.GetContacts())
-                {
-                    Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-                }
-
-                Contact singleContact = contactService.GetContact("Contact1");
-                Console.WriteLine("Fetched contact by name, Name: {0}, Address: {1}", singleContact.Name, singleContact.Address);
-
-                singleContact.Address = "Changed Address";
-
-                Console.WriteLine("Updating address for contact1");
-                contactService.UpdateContact(singleContact.Name, singleContact);
-
-                contactService.UpdateContact("Contact3", "Updated using form param");
-
-                Console.WriteLine("Re-fetching contact list");
-                foreach (Contact contact in contactService.GetContacts())
-                {
-                    Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-                }
-
-                Console.WriteLine("Deleting contact 1");
-                contactService.DeleteContact("Contact1");
-
-                Console.WriteLine("Re-fetching contact list");
-                foreach (Contact contact in contactService.GetContacts())
-                {
-                    Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-                }
+                Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
             }
-            catch (WebException ex)
+
+            // Fetch a specific contact.  The value passed in here is used in the URL
+            // GET http://localhost:9000/api/contact/Contact1
+            Contact singleContact = contactService.GetContact("Contact1");
+            Console.WriteLine("Fetched contact by name, Name: {0}, Address: {1}", singleContact.Name, singleContact.Address);
+
+            singleContact.Address = "Changed Address";
+
+            Console.WriteLine("Updating address for contact1");
+
+            // Updates the contact on the server.  The supplied name is mapped to the URL,
+            // the contact is serialized to the body as XML based on the Produces attribute
+            contactService.UpdateContact(singleContact.Name, singleContact);
+
+            // Another example of updating the address for a contact. This example
+            // uses form encoded parameters to send the data:
+            //
+            // PUT   http://localhost:9000/api/contact/Contact3
+            // BODY: address=Updated_using_form_param
+            contactService.UpdateContact("Contact3", "Updated_using_form_param");
+
+            // Show the updates worked by reloading the data and printing the updated values
+            Console.WriteLine("Re-fetching contact list");
+            foreach (Contact contact in contactService.GetContacts())
             {
-                Console.Error.Write(ex);                
+                Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
             }
+
+            // Deletes a contact on the server using similar path mappings.
+            // The DELETE attribute determines the verb to use:
+            //
+            // DELETE http://localhost:9000/api/contact/Contact1
+            Console.WriteLine("Deleting contact 1");
+            contactService.DeleteContact("Contact1");
+
+            // Reload to show the contact has been deleted
+            Console.WriteLine("Re-fetching contact list");
+            foreach (Contact contact in contactService.GetContacts())
+            {
+                Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
+            }
+
             Console.ReadKey();
         }
     }
