@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------
-// <copyright file="IContactService.cs">
+// <copyright file="ContactController.cs">
 // 
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
@@ -24,49 +24,57 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using EasyPeasy.Attributes;
-using EasyPeasy.Example;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
+using System.Web.Http;
 
-namespace EasyPeasy
+namespace EasyPeasy.Example.Server
 {
-    [Path("/api/contact"), 
-     Consumes(MediaType.ApplicationXml),
-	 Produces(MediaType.ApplicationXml)]
-    public interface IContactService
-    {
-        [GET, Path("/{name}")]
-        Contact GetContact([PathParam("name")] string name);
+	public class ContactController : ApiController
+	{
+		private static IList<Contact> contactDb = new List<Contact>(new [] 
+		{
+			new Contact { Address = "Address1", Name = "Contact1" },
+			new Contact { Address = "Address2", Name = "Contact2" },
+			new Contact { Address = "Address3", Name = "Contact3" }
+		});
 
-        [GET, Path("/{name}")]
-        Task<Contact> GetContactAsync([PathParam("name")] string name);
+		// GET api/contact
+		public IEnumerable<Contact> Get()
+		{
+			return contactDb;
+		}
 
-        [GET, Path("/")]
-        List<Contact> GetContacts();
+		// GET api/contact/contact1
+		public Contact Get(string id)
+		{
+			return contactDb.FirstOrDefault(c => c.Name == id);
+		}
 
-        [GET, Path("/")]
-        Task<List<Contact>> GetContactsAsync();
+		// POST api/contact
+		public void Post([FromBody]Contact contact)
+		{
+			contactDb.Add(contact);
+		}
 
-        [POST, Path("/")]
-        void CreateContact(Contact contact);
+		// PUT api/contact/contact1
+		public void Put(string id, [FromBody]Contact value)
+		{
+			Contact contact = this.Get(id);
+			if (contact != null)
+				contact.Address = value.Address;
+		}
 
-        [POST, Path("/")]
-        Task CreateContactAsync(Contact contact);
-
-        [PUT, Path("/{name}")]
-        void UpdateContact([PathParam("name")] string name, Contact contact);
-
-        [PUT, Path("/{name}"), Consumes(MediaType.ApplicationUrlEncoded)]
-        void UpdateContact([PathParam("name")] string name, [FormParam("address")] string address);
-
-        [PUT, Path("/{name}")]
-        Task UpdateContactAsync([PathParam("name")] string name, Contact contact);
-
-        [DELETE, Path("/{name}")]
-        void DeleteContact([PathParam("name")] string name);
-
-        [DELETE, Path("/{name}")]
-        Task DeleteContactAsync([PathParam("name")] string name);
-    }
+		// DELETE api/contact/contact1
+		public void Delete(string id)
+		{
+			for (int i = contactDb.Count - 1; i >= 0; i--)
+			{
+				if (contactDb[i].Name == id)
+					contactDb.RemoveAt(i);
+			}
+		}
+	}
 }
+

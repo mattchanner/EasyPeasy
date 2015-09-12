@@ -3,15 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{094D70C0-174C-496D-AE16-24101FC577D4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EasyPeasy</RootNamespace>
     <AssemblyName>EasyPeasy.Example</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -23,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -38,7 +36,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IContactService.cs" />
@@ -51,11 +49,11 @@
       <Name>EasyPeasy.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\EasyPeasy.Example.Models\EasyPeasy.Example.Models.csproj">
-      <Project>{0e7fb48b-a790-4856-95b6-bf98fadacf49}</Project>
+      <Project>{0E7FB48B-A790-4856-95B6-BF98FADACF49}</Project>
       <Name>EasyPeasy.Example.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\EasyPeasy\EasyPeasy.csproj">
-      <Project>{a15bd7eb-757d-451a-839d-f9bc358a86df}</Project>
+      <Project>{A15BD7EB-757D-451A-839D-F9BC358A86DF}</Project>
       <Name>EasyPeasy</Name>
     </ProjectReference>
   </ItemGroup>

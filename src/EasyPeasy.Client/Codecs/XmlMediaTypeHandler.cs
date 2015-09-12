@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace EasyPeasy.Client.Codecs
 {
@@ -36,9 +37,6 @@ namespace EasyPeasy.Client.Codecs
     /// </summary>
     internal class XmlMediaTypeHandler : IMediaTypeHandler
     {
-        /// <summary> The serializer factory </summary>
-        private static readonly XmlSerializerFactory Factory = new XmlSerializerFactory();
-
         /// <summary>
         /// When called, this method is responsible for writing the value to the stream
         /// </summary>
@@ -47,8 +45,9 @@ namespace EasyPeasy.Client.Codecs
         /// <param name="body">The stream to write to</param>
         public void WriteObject(WebRequest request, object value, Stream body)
         {
-            XmlSerializer serializer = new XmlSerializer(value.GetType());
-            serializer.Serialize(body, value);
+			DataContractSerializer serializer = new DataContractSerializer (value.GetType ());
+			System.Diagnostics.Trace.WriteLine ("XmlMediaTypeHandler::WriteObject");
+            serializer.WriteObject(body, value);
         }
 
         /// <summary>
@@ -61,8 +60,9 @@ namespace EasyPeasy.Client.Codecs
         /// <returns> The <see cref="object"/> read from the stream.  </returns>
         public object ReadObject(WebResponse response, Stream body, Type objectType)
         {
-            XmlSerializer serializer = new XmlSerializer(objectType);
-            return serializer.Deserialize(body);
+			System.Diagnostics.Trace.WriteLine ("XmlMediaTypeHandler::ReadObject");
+			DataContractSerializer serializer = new DataContractSerializer (objectType);
+            return serializer.ReadObject(body);
         }
     }
 }

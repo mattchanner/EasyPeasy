@@ -39,7 +39,9 @@ namespace EasyPeasy
         /// <summary> The main method. </summary>
         public static void Main()
         {
-            Uri baseAddress = new Uri("http://localhost:52814");
+			System.Threading.Thread.Sleep (2000);
+
+            Uri baseAddress = new Uri("http://localhost:9000");
 
             AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
             CompositionContainer container = new CompositionContainer(catalog);
