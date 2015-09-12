@@ -84,13 +84,14 @@ namespace EasyPeasy.Client.Tests.Codecs
         public void Can_read_object_from_stream()
         {
             const string XmlString = @"<?xml version='1.0'?>
-                    <SimpleDto xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+                    <SimpleDto xmlns='http://schemas.datacontract.org/2004/07/EasyPeasy.Client.Tests.TestTypes'>
                       <StringProperty>A string</StringProperty>
                       <IntProperty>10</IntProperty>
                       <Timestamp>2013-02-25T08:49:06.4602405+00:00</Timestamp>
                       <NullableDouble>23.456</NullableDouble>
                     </SimpleDto>";
-            byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(XmlString);
+
+			byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(XmlString);
             MemoryStream stream = new MemoryStream(jsonBytes);
 
             object result = handler.ReadObject(null, stream, typeof(SimpleDto));

@@ -170,11 +170,14 @@ namespace EasyPeasy.Client.Implementation
         {
             if (this.parameters.Count == 0) return string.Empty;
 
-            return (from kv in this.parameters
-                    from value in kv.Value
-                    where value != null
-                    select string.Format("{0}={1}", kv.Key, this.ParameterToString(value))).Aggregate(
-                        (s, s1) => string.Format("{0}&{1}", s, s1));
+			var keyValuePairs = (from kv in this.parameters
+			                    from value in kv.Value
+			                    where value != null && (value.ToString ().Length > 0)
+			                    select string.Format ("{0}={1}", kv.Key, this.ParameterToString (value)));
+			if (keyValuePairs.Any())
+				return keyValuePairs.Aggregate((s, s1) => string.Format("{0}&{1}", s, s1));
+
+			return string.Empty;
         }
 
         /// <summary>

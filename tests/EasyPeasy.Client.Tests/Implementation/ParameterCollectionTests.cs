@@ -65,7 +65,7 @@ namespace EasyPeasy.Client.Tests.Implementation
         public void Can_add_boolean_parameter()
         {
             string queryString = new ParameterCollection().Add("param1", true).Add("param2", false).ToString();
-            Assert.That(queryString, Is.EqualTo("param1=true&param2=false"));
+            Assert.That(queryString, Is.EqualTo("param1=True&param2=False"));
         }
 
         /// <summary>
@@ -119,16 +119,6 @@ namespace EasyPeasy.Client.Tests.Implementation
         }
 
         /// <summary>
-        /// Empty value throws argument exception
-        /// </summary>
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Empty_value_throws_argument_execption()
-        {
-            new ParameterCollection().Add("param1", string.Empty);
-        }
-
-        /// <summary>
         /// MayBeAdd should not serialize a parameter if the value is null
         /// </summary>
         [Test]
@@ -173,10 +163,10 @@ namespace EasyPeasy.Client.Tests.Implementation
         /// Attempting to add the same key to the query string throws a duplicate key exception
         /// </summary>
         [Test]
-        [ExpectedException(typeof(DuplicateKeyException))]
-        public void Adding_The_Same_Parameter_Twice_Throws_DuplicateKeyException()
+        public void Adding_The_Same_Parameter_Twice_Does_Not_Throw()
         {
-            new ParameterCollection().Add("p", true).Add("p", false);
+			new ParameterCollection ().Add ("p", true).Add ("p", false);
+
         }
     }
 }

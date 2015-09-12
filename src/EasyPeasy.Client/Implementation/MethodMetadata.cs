@@ -78,12 +78,12 @@ namespace EasyPeasy.Client.Implementation
         public string MethodPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the media type that the service consumes
+        /// Gets or sets the media type that the client consumes
         /// </summary>
         public string Consumes { get; set; }
 
         /// <summary>
-        /// Gets or sets the media type that the service produces
+        /// Gets or sets the media type that the client produces
         /// </summary>
         public string Produces { get; set; }
 
@@ -154,8 +154,8 @@ namespace EasyPeasy.Client.Implementation
             
             request.Credentials = credentials;
             request.Method = this.Verb.ToString();
-            request.ContentType  = this.Consumes;
-            request.Accept = this.Produces;
+			request.ContentType  = this.Produces;
+            request.Accept = this.Consumes;
 
             foreach (var kv in this.headerParameters.Where(kv => kv.Value != null && kv.Key != null))
             {
@@ -186,7 +186,7 @@ namespace EasyPeasy.Client.Implementation
             else if (this.RequestBody != null)
             {
                 IMediaTypeHandler handler;
-                if (mediaRegistry.TryGetHandler(this.RequestBody.GetType(), this.Consumes, out handler))
+				if (mediaRegistry.TryGetHandler(this.RequestBody.GetType(), this.Produces, out handler))
                 {
                     handler.WriteObject(request, this.RequestBody, request.GetRequestStream());
                 }

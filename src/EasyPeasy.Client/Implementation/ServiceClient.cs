@@ -93,7 +93,7 @@ namespace EasyPeasy.Client.Implementation
         protected Task<T> AsyncRequestWithResult<T>(MethodMetadata methodProperties)
         {
             IMediaTypeHandler handler;
-            if (!this.MediaRegistry.TryGetHandler(typeof(T), methodProperties.Produces, out handler))
+			if (!this.MediaRegistry.TryGetHandler(typeof(T), methodProperties.Consumes, out handler))
                 throw new EasyPeasyException(methodProperties.Produces + " does not have a valid handler");
             
             Task<WebResponse> task = CreateRequest(methodProperties);
@@ -148,7 +148,7 @@ namespace EasyPeasy.Client.Implementation
         protected T SyncRequestWithResult<T>(MethodMetadata methodProperties)
         {
             IMediaTypeHandler handler;
-            if (!this.MediaRegistry.TryGetHandler(typeof(T), methodProperties.Produces, out handler))
+            if (!this.MediaRegistry.TryGetHandler(typeof(T), methodProperties.Consumes, out handler))
                 throw new EasyPeasyException(methodProperties.Produces + " does not have a valid handler");
             
             WebResponse response = SyncRequestWithRawResponse(methodProperties);
