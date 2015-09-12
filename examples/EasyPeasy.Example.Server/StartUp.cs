@@ -2,7 +2,7 @@
 // <copyright file="StartUp.cs">
 // 
 //  The MIT License (MIT)
-//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
+//  Copyright © 2015 Matt Channer (mchanner at gmail dot com)
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the “Software”),
