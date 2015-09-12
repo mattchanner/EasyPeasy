@@ -1,8 +1,15 @@
 EasyPeasy
 ==========
 
-EasyPeasy is a library for .Net clients, using jax-rs style annotations on interfaces to automatically generate implementations
-that can be used to communicate with a RESTful service.
+EasyPeasy aims to get rid of the boiler plate coding required when talking
+to REST APIs. 
+
+Simply define an interface to represent the REST service and annotate with
+path, verb and parameter attributes to influence how the method are called.
+
+The library supports both synchronous and asynchronous method calls, just
+define a method with a return type of either Task or Task<T> and EasyPeasy will
+do the rest for you!
 
 Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki/Java_API_for_RESTful_Web_Services) style attributes
 
@@ -29,13 +36,13 @@ Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki
         void UpdateCustomer([PathParam("name")] string name, [FormParam("address")] string address);
     }
 
-The proxy type can then be created simply by calling:
+An implementation of this interface can then be generated for you using those attributes. Simply create a factory and call Create:
 
     IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
     ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
     Customer customer = client.GetCustomer("My Customer");
 
-Or, using MEF:
+Being a fan of MEF, the types are all Exportable.  Below is an example of grabbing an IEasyPeasyFactory from a container:
 
     AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
     CompositionContainer container = new CompositionContainer(catalog);
@@ -45,37 +52,3 @@ Or, using MEF:
     ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
     Customer customer = client.GetCustomer("My Customer");
 
-### The following attributes are supported:
-
-* [Path] - Specifies the relative path for a resource class or method.
-* [GET], [PUT], [POST], [DELETE] specify the HTTP request type of a resource.
-* [Produces] specifies the response MIME media types.
-* [Consumes] specifies the accepted request media types.
-
-In addition, further attributes to method parameters to pull information out of the request are available.  All the *Param attributes take a key of some form which is used to look up the value required.
-
-* [PathParam] binds the parameter to a path segment
-* [QueryParam] binds the parameter to the value of an HTTP query parameter
-* [HeaderParam] binds the parameter to an HTTP header value.
-* [FormParam] binds the parameter to a form value
-
-### Not yet implemented:
-
-* MatrixParam
-* CookieParam
-* DefaultValue
-
-### Media Type encoding \ decoding
-
-The following media types are supported out of the box:
-
-* application/json (using Newtonsoft.Json)
-* application/xml  (uses XmlSerializer)
-* text/xml
-* text/plain
-* text/html
-* image/png
-* image/gif
-* image/jpeg
-* image/bmp
-* image/tiff (to the extent that TIFF files are supported by the .NET framework)
