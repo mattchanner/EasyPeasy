@@ -32,26 +32,26 @@ using System.Threading.Tasks;
 namespace EasyPeasy
 {
     // The top level Path attribute ensure all methods are made relative to this.
-	//
+    //
     // The Produces attribute specifies the default serializer to use when writing data
     // to the body of the request and also determines the value of the Content-Type header.
-	//
+    //
     // The Consume attribute is used to determine the expected content type of the response and
-	// is also used to set the Accept header.
-	//
+    // is also used to set the Accept header.
+    //
     [Path("/api/contact"), 
      Consumes(MediaType.ApplicationXml),
      Produces(MediaType.ApplicationXml)]
     public interface IContactService
     {
         // Synchronous GET request. The /{name} path attribute is relative to /api/contract 
-		// (which is defined on the interface).
+        // (which is defined on the interface).
         // The /{name} value is mapped to the method argument using the PathParam attribute
         [GET, Path("/{name}")]
         Contact GetContact([PathParam("name")] string name);
 
         // Asynchrounous version of the GetContact call. To make an async call, simply return 
-		// a Task<T>, or for void operations, a Task
+        // a Task<T>, or for void operations, a Task
         [GET, Path("/{name}")]
         Task<Contact> GetContactAsync([PathParam("name")] string name);
 
@@ -60,7 +60,7 @@ namespace EasyPeasy
         List<Contact> GetContacts();
 
         // Posts a new contact to the server.  The supplied Contact will be added to the body 
-		// using the serializer defined by the Produces attribute (in this case, application/xml).
+        // using the serializer defined by the Produces attribute (in this case, application/xml).
         // The most common formats are supported out of the box, but can be extended if required using
         // EasyPeasyFactory.Registry.RegisterCustomTypeHandler
         [POST, Path("/")]
