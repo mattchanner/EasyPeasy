@@ -77,7 +77,7 @@ namespace EasyPeasy
         void UpdateContact([PathParam("name")] string name, [FormParam("address")] string address);
 
         // Deletes a contact on the server
-    [DELETE, Path("/{name}")]
+        [DELETE, Path("/{name}")]
         void DeleteContact([PathParam("name")] string name);
     }
 }
