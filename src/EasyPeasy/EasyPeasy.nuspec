@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+    <metadata>
+        <id>EasyPeasy</id>
+        <version>0.1.0</version>
+        <title>Matt Channer</title>
+        <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+        <projectUrl>https://github.com/mattchanner/EasyPeasy</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A super simple, typesafe REST client</description>
+        <releaseNotes>First release.</releaseNotes>
+        <tags>REST client</tags>
+        <dependencies>
+            <dependency id="Newtonsoft.Json" version="7.0.1" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\EasyPeasy.dll" target="lib" />
+    </files>
+</package>

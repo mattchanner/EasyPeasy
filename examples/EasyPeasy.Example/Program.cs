@@ -26,9 +26,9 @@
 
 using System;
 using System.Net;
-
-using EasyPeasy.Client;
 using System.ComponentModel.Composition.Hosting;
+using EasyPeasy;
+
 using EasyPeasy.Example;
 
 namespace EasyPeasy

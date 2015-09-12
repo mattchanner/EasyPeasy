@@ -5,16 +5,14 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EasyPeasy")]
-[assembly: AssemblyDescription("A super simple client for REST services")]
+[assembly: AssemblyTitle("EasyPeasy.Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Matt Channer")]
-[assembly: AssemblyProduct("EasyPeasy.Client")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("EasyPeasy.Client.Tests")]
 [assembly: AssemblyCopyright("Copyright © Matt Channer 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
-[assembly:InternalsVisibleTo("EasyPeasy.Tests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -22,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("bfecc30a-89dc-436c-8cfa-28c11dbdf7e5")]
+[assembly: Guid("d92a2c57-4a17-46ab-8879-59c961d38a08")]
 
 // Version information for an assembly consists of the following four values:
 //
