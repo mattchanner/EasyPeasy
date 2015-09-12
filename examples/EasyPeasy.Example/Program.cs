@@ -33,12 +33,16 @@ using EasyPeasy.Example;
 
 namespace EasyPeasy
 {
-    /// <summary> The program entry point class. </summary>
+    /// <summary> 
+    /// An example client, showing how to use EasyPeasy to generate a usable client
+    /// from a configured service interface.
+    /// </summary>
     public class Program
     {
-        /// <summary> The main method. </summary>
         public static void Main()
         {
+            // This is the based address of the server which gets passed into the 
+            // creation method
             Uri baseAddress = new Uri("http://localhost:9000");
 
             // The factory can be created using MEF, the following is an example of how
@@ -57,7 +61,6 @@ namespace EasyPeasy
             IContactService contactService = factory.Create<IContactService>(baseAddress);
 
             // The following are examples of using the implementation
-
 
             // 1 - fetch a list of contacts from the server and print them out
             // This method call maps to:
