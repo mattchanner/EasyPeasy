@@ -24,10 +24,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using Owin;
 using System.Web.Http;
-using System.Web.Http.Dispatcher;
 
 namespace EasyPeasy.Example.Server
 {
