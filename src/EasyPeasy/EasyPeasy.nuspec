@@ -16,6 +16,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="bin\Release\EasyPeasy.dll" target="lib" />
+        <file src="bin\Release\EasyPeasy.dll" target="lib\net45" />
     </files>
 </package>
