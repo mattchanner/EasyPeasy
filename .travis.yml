@@ -2,7 +2,6 @@ language: csharp
 solution: EasyPeasy.sln
 
 install:
-    - nuget restore EasyPeasy.sln
     - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 
 script:
