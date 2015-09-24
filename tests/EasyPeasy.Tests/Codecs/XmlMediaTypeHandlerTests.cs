@@ -55,7 +55,7 @@ namespace EasyPeasy.Tests.Codecs
         /// <summary>
         /// Tests that an object graph can be written to an output stream
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public void Can_write_object_to_output_stream()
         {
             SimpleDto dto = new SimpleDto();
@@ -74,13 +74,14 @@ namespace EasyPeasy.Tests.Codecs
             Assert.That(bytes.Length, Is.Not.EqualTo(0));
 
             string xmlString = System.Text.Encoding.UTF8.GetString(bytes);
+            Console.WriteLine(xmlString);
             Assert.That(xmlString, Is.Not.Null);
         }
 
         /// <summary>
         /// Tests that an object can be read from a stream
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public void Can_read_object_from_stream()
         {
             const string XmlString = @"<?xml version='1.0'?>
