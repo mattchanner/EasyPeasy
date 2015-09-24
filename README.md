@@ -49,6 +49,36 @@ An implementation of this interface can then be generated for you using those at
     Customer customer = client.GetCustomer("My Customer");
 ```
 
+Services using basic authentication can be consumed by passing NetworkCredentials into the Create method:
+
+```csharp
+    ICustomerService client = 
+        new EasyPeasyFactory().Create<ICustomerService>(
+             new Uri("http://server.com"),
+             new NetworkCredential("myUserName", "myPassword"));
+```
+
+Each instance created by EasyPeasy will also implement the IServiceClient interface, where you can access
+the base Uri, credentials, get and set a timeout for the service calls and wire up events:
+```csharp
+
+ICustomerService client = 
+    new EasyPeasyFactory().Create(new Uri(..));
+    
+IServiceClient serviceClient = (IServiceClient)client;
+
+// Receive a notification before any request is sent to the server.
+// The event contains a reference to the underlying WebRequest:
+serviceClient.BeforeSend += (sender, e) => {
+    Console.WriteLine("Sending request to" + e.Request.RequestUri);
+};
+
+// Set a custom timeout on the request
+serviceClient.Timeout = TimeSpan.FromSeconds(5);
+    
+```
+
+
 Being a fan of MEF, the types are all Exportable.  Below is an example of grabbing an IEasyPeasyFactory from a container:
 
 ```csharp
