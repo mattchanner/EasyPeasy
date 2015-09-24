@@ -13,6 +13,8 @@ do the rest for you!
 
 Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki/Java_API_for_RESTful_Web_Services) style attributes
 
+[![Build Status](https://travis-ci.org/mattchanner/EasyPeasy.svg?branch=master)](https://travis-ci.org/mattchanner/EasyPeasy)
+
 ### Example
 ```csharp
 
