@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\HttpMethodAttributes.cs" />
     <Compile Include="Codecs\ByteArrayTypeHandler.cs" />
     <Compile Include="Codecs\FileInfoTypeHandler.cs" />
     <Compile Include="Codecs\ImageMediaTypeHandler.cs" />
@@ -81,15 +82,11 @@
     <Compile Include="WebRequestEventArgs.cs" />
     <Compile Include="WebResponseEventArgs.cs" />
     <Compile Include="Attributes\ConsumesAttribute.cs" />
-    <Compile Include="Attributes\DELETEAttribute.cs" />
     <Compile Include="Attributes\FormParamAttribute.cs" />
-    <Compile Include="Attributes\GETAttribute.cs" />
     <Compile Include="Attributes\HeaderParamAttribute.cs" />
     <Compile Include="Attributes\PathAttribute.cs" />
     <Compile Include="Attributes\PathParamAttribute.cs" />
-    <Compile Include="Attributes\POSTAttribute.cs" />
     <Compile Include="Attributes\ProducesAttribute.cs" />
-    <Compile Include="Attributes\PUTAttribute.cs" />
     <Compile Include="Attributes\QueryParamAttribute.cs" />
     <Compile Include="MediaType.cs" />
   </ItemGroup>

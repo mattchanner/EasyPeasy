@@ -1,5 +1,5 @@
-﻿// ------------------------------------------------------------------------
-// <copyright file="PutAttribute.cs">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="HttpMethodAttributes.cs">
 //
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
@@ -28,6 +28,30 @@ using System;
 
 namespace EasyPeasy.Attributes
 {
+    /// <summary>
+    /// The Delete attribute
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class DELETEAttribute : Attribute
+    {
+    }
+
+    /// <summary>
+    /// The GET attribute
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class GETAttribute : Attribute
+    {
+    }
+
+    /// <summary>
+    /// The POST attribute
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class POSTAttribute : Attribute
+    {
+    }
+
     /// <summary>
     /// The Put attribute
     /// </summary>

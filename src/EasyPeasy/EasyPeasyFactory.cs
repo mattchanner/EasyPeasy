@@ -30,8 +30,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -40,7 +38,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using EasyPeasy.Attributes;
-using EasyPeasy.Codecs;
 using EasyPeasy.Implementation;
 using EasyPeasy.Properties;
 using System.ComponentModel.Composition;
@@ -82,6 +79,13 @@ namespace EasyPeasy
 
         /// <summary> The request interceptors. </summary>
         private IList<IRequestInterceptor> interceptors;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
+        /// </summary>
+        public EasyPeasyFactory() : this(new DefaultMediaTypeRegistry())
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
