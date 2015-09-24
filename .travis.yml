@@ -4,11 +4,11 @@ solution: EasyPeasy.sln
 env:
     global:
         - EnableNuGetPackageRestore=true
-#
-#install:
-#    - nuget restore EasyPeasy.sln
-#    - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
-#
-#script:
-#    - xbuild /p:Configuration=Release EasyPeasy.sln
-#    - mono ./testrunner/NUnit.Runner.2.6.4/tools/nunit-console.exe ./tests/EasyPeasy.Tests/bin/Release/EasyPeasy.Tests.dll
+
+install:
+    - nuget restore EasyPeasy.sln
+    - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+
+script:
+    - xbuild /p:Configuration=Release EasyPeasy.sln
+    - mono ./testrunner/NUnit.Runner.2.6.4/tools/nunit-console.exe ./tests/EasyPeasy.Tests/bin/Release/EasyPeasy.Tests.dll
