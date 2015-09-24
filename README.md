@@ -38,8 +38,8 @@ Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki
 
 An implementation of this interface can then be generated for you using those attributes. Simply create a factory and call Create:
 
-    IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
-    ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
+    ICustomerService client = new EasyPeasyFactory().Create<ICustomerService>(new Uri("http://server.com"));
+    
     Customer customer = client.GetCustomer("My Customer");
 
 Being a fan of MEF, the types are all Exportable.  Below is an example of grabbing an IEasyPeasyFactory from a container:
