@@ -34,14 +34,17 @@ Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki
         Task DeleteCustomerAsync([PathParam("name")] string name, [QueryParam("q")] bool q);
 
         [PUT, Path("/{name}"), Consumes(MediaType.ApplicationUrlEncoded)]
-        void UpdateCustomer([PathParam("name")] string name, [FormParam("address")] string address);
+        void UpdateCustomer([PathParam("name")] string name, 
+                            [FormParam("address")] string address);
     }
 ```
 
 An implementation of this interface can then be generated for you using those attributes. Simply create a factory and call Create:
 
 ```csharp
-    ICustomerService client = new EasyPeasyFactory().Create<ICustomerService>(new Uri("http://server.com"));
+    ICustomerService client = 
+        new EasyPeasyFactory().Create<ICustomerService>(
+             new Uri("http://server.com"));
     
     Customer customer = client.GetCustomer("My Customer");
 ```
