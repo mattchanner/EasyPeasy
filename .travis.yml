@@ -11,4 +11,4 @@ install:
 
 script:
     - xbuild /p:Configuration=Release EasyPeasy.sln
-    - mono ./testrunner/NUnit.Runner.2.6.4/tools/nunit-console.exe ./tests/EasyPeasy.Tests/bin/Release/EasyPeasy.Tests.dll
+    - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./tests/EasyPeasy.Tests/bin/Release/EasyPeasy.Tests.dll
