@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>EasyPeasy</id>
-        <version>0.2.0</version>
+        <version>0.2.1</version>
         <title>EasyPeasy REST Client</title>
         <authors>Matt Channer</authors>
         <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
