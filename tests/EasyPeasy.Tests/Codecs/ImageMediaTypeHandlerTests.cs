@@ -50,7 +50,7 @@ namespace EasyPeasy.Tests.Codecs
         [Test]
         public void Can_write_and_read_image()
         {
-            Image sourceImage = Resources.lemon;
+            Image sourceImage = new Bitmap(32, 32);
 
             MemoryStream stream = new MemoryStream();
 
