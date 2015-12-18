@@ -25,6 +25,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Net;
 
 namespace EasyPeasy
@@ -71,9 +72,9 @@ namespace EasyPeasy
         TService Create<TService>(Uri baseUri, ICredentials credentials = null) where TService : class;
 
         /// <summary>
-        /// Saves the generated assembly to disk
+        /// Saves the generated assembly to disk, returning a reference to the assembly as a FileInfo instance
         /// </summary>
         /// <param name="fileName"> The name of the file to save</param>
-        void SaveGeneratedAssembly(string fileName);
+        FileInfo SaveGeneratedAssembly();
     }
 }

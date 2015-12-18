@@ -25,11 +25,11 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Net;
 using System.ComponentModel.Composition.Hosting;
-using EasyPeasy;
 
 using EasyPeasy.Example;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace EasyPeasy
 {
@@ -41,6 +41,12 @@ namespace EasyPeasy
     {
         public static void Main()
         {
+            new Program().RunExamples().Wait();
+            Console.ReadKey();
+        }
+
+        private async Task RunExamples()
+        {
             // This is the based address of the server which gets passed into the 
             // creation method
             Uri baseAddress = new Uri("http://localhost:9000");
@@ -51,28 +57,29 @@ namespace EasyPeasy
             CompositionContainer container = new CompositionContainer(catalog);
 
             IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
-
+            
             // An alternative would be the more direct way:
             // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
 
             // Auto generate an implementation of the IContactService interface.
             // The implementation is configured via the interface attributes to determine each
             // methods end point, serialization formats etc.
-            IContactService contactService = factory.Create<IContactService>(baseAddress);
-
+            IContactServiceAsync contactService = factory.Create<IContactServiceAsync>(baseAddress);
+            
             // The following are examples of using the implementation
 
             // 1 - fetch a list of contacts from the server and print them out
             // This method call maps to:
             // GET http://localhost:9000/api/contact
-            foreach (Contact contact in contactService.GetContacts())
+            List<Contact> contacts = await contactService.GetContactsAsync();
+            foreach (var contact in contacts)
             {
                 Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
             }
 
             // Fetch a specific contact.  The value passed in here is used in the URL
             // GET http://localhost:9000/api/contact/Contact1
-            Contact singleContact = contactService.GetContact("Contact1");
+            Contact singleContact = await contactService.GetContactAsync("Contact1");
             Console.WriteLine("Fetched contact by name, Name: {0}, Address: {1}", singleContact.Name, singleContact.Address);
 
             singleContact.Address = "Changed Address";
@@ -81,18 +88,19 @@ namespace EasyPeasy
 
             // Updates the contact on the server.  The supplied name is mapped to the URL,
             // the contact is serialized to the body as XML based on the Produces attribute
-            contactService.UpdateContact(singleContact.Name, singleContact);
+            await contactService.UpdateContactAsync(singleContact.Name, singleContact);
 
             // Another example of updating the address for a contact. This example
             // uses form encoded parameters to send the data:
             //
             // PUT   http://localhost:9000/api/contact/Contact3
             // BODY: address=Updated_using_form_param
-            contactService.UpdateContact("Contact3", "Updated_using_form_param");
+            await contactService.UpdateContactAsync("Contact3", "Updated_using_form_param");
 
             // Show the updates worked by reloading the data and printing the updated values
             Console.WriteLine("Re-fetching contact list");
-            foreach (Contact contact in contactService.GetContacts())
+            List<Contact> fetchedContacts = await contactService.GetContactsAsync();
+            foreach (Contact contact in fetchedContacts)
             {
                 Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
             }
@@ -102,16 +110,17 @@ namespace EasyPeasy
             //
             // DELETE http://localhost:9000/api/contact/Contact1
             Console.WriteLine("Deleting contact 1");
-            contactService.DeleteContact("Contact1");
+            await contactService.DeleteContactAsync("Contact1");
 
             // Reload to show the contact has been deleted
             Console.WriteLine("Re-fetching contact list");
-            foreach (Contact contact in contactService.GetContacts())
+            fetchedContacts = await contactService.GetContactsAsync();
+            foreach (Contact contact in fetchedContacts)
             {
                 Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
             }
 
-            Console.ReadKey();
+            Console.WriteLine("Saved assembly to " + factory.SaveGeneratedAssembly().FullName);
         }
     }
 }

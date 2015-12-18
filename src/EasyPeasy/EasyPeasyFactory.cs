@@ -41,6 +41,7 @@ using EasyPeasy.Attributes;
 using EasyPeasy.Implementation;
 using EasyPeasy.Properties;
 using System.ComponentModel.Composition;
+using System.IO;
 
 namespace EasyPeasy
 {
@@ -201,12 +202,12 @@ namespace EasyPeasy
         /// <summary>
         /// Saves the assembly to disk
         /// </summary>
-        /// <param name="fileName">The name of the file in the current directory to save the file to</param>
-        public void SaveGeneratedAssembly(string fileName)
+        /// <returns>A file info reference to the generated assembly</returns>
+        public FileInfo SaveGeneratedAssembly()
         {
-            Ensure.IsNotNull(fileName, "fileName");
-
-            assemblyBuilder.Save(fileName);
+            const string FileName = "DynamicServiceAssembly.dll";
+            assemblyBuilder.Save(FileName);
+            return new FileInfo(FileName);
         }
 
         /// <summary>
@@ -265,7 +266,15 @@ namespace EasyPeasy
             {
                 if (isGenericMethod)
                 {
-                    baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType);
+                    if (returnType != typeof(Task<>))
+                    {
+                        Type taskType = returnType.GetGenericArguments()[0];
+                        baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(taskType);
+                    }
+                    else
+                    {
+                        baseMethodHandler = baseMethodInfoPrototype.MakeGenericMethod(returnType);
+                    }
                 }
                 else if (returnType != typeof(Task) && returnType != typeof(WebResponse))
                 {
