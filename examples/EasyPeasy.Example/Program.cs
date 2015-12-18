@@ -57,6 +57,10 @@ namespace EasyPeasy
             CompositionContainer container = new CompositionContainer(catalog);
 
             IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
+
+            // Interceptors can be added to the factory to perform actions on the HTTP request and
+            // response objects.  This example simply logs out the events to the console
+            factory.AddInterceptor(new LoggingInterceptor());
             
             // An alternative would be the more direct way:
             // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());

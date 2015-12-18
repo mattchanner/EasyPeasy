@@ -21,7 +21,7 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 //  THE SOFTWARE.
-// </copyright>
+// </copyright> 
 // ------------------------------------------------------------------------------
 
 using EasyPeasy.Attributes;
@@ -40,8 +40,8 @@ namespace EasyPeasy
     // is also used to set the Accept header.
     //
     [Path("/api/contact"), 
-     Consumes(MediaType.ApplicationXml),
-     Produces(MediaType.ApplicationXml)]
+     Consumes(MediaType.ApplicationJson),
+     Produces(MediaType.ApplicationJson)]
     public interface IContactServiceAsync
     {
         // Asynchrounous version of the GetContact call. To make an async call, simply return 
