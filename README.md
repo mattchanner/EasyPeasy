@@ -48,7 +48,7 @@ An implementation of this interface can then be generated for you using those at
         new EasyPeasyFactory().Create<ICustomerService>(
              new Uri("http://server.com"));
     
-    Customer customer = client.GetCustomer("My Customer");
+    Customer customer = await client.GetCustomerAsync("My Customer");
 ```
 
 Services using basic authentication can be consumed by passing NetworkCredentials into the Create method:
@@ -90,5 +90,5 @@ Being a fan of MEF, the types are all Exportable.  Below is an example of grabbi
     IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
 
     ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
-    Customer customer = client.GetCustomer("My Customer");
+    Customer customer = await client.GetCustomerAsync("My Customer");
 ```
