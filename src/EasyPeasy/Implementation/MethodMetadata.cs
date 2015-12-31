@@ -206,7 +206,7 @@ namespace EasyPeasy.Implementation
 
             Path specializedPath = endpoint.ReplacePathVariables(this.pathParameters);
 
-            string queryString = Uri.EscapeDataString(this.queryParameters.ToString());
+            string queryString = this.queryParameters.ToString();
 
             UriBuilder builder = new UriBuilder(baseUri);
 

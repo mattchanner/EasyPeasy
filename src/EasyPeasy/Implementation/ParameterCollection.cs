@@ -170,10 +170,12 @@ namespace EasyPeasy.Implementation
         {
             if (this.parameters.Count == 0) return string.Empty;
 
+            Func<string, string> escaper = Uri.EscapeDataString;
+
 			var keyValuePairs = (from kv in this.parameters
 			                    from value in kv.Value
 			                    where value != null && (value.ToString ().Length > 0)
-			                    select string.Format ("{0}={1}", kv.Key, this.ParameterToString (value)));
+			                    select string.Format ("{0}={1}", escaper(kv.Key), escaper(this.ParameterToString (value).ToString())));
 			if (keyValuePairs.Any())
 				return keyValuePairs.Aggregate((s, s1) => string.Format("{0}&{1}", s, s1));
 

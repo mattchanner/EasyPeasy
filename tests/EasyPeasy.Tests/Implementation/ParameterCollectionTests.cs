@@ -72,50 +72,45 @@ namespace EasyPeasy.Tests.Implementation
         /// Passing a null parameter throws an argument null exception
         /// </summary>
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Null_param_name_throws_argument_null_exception()
         {
-            new ParameterCollection().Add(null, "value");
+            Assert.Throws<ArgumentNullException>(() => new ParameterCollection().Add(null, "value"));
         }
 
         /// <summary>
         /// Passing a null parameter throws an argument null exception
         /// </summary>
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Empty_param_name_throws_argument_exception()
         {
-            new ParameterCollection().Add(string.Empty, "value");
+            Assert.Throws<ArgumentException>(() => new ParameterCollection().Add(string.Empty, "value"));
         }
 
         /// <summary>
         /// Passing a null parameter throws an argument null exception
         /// </summary>
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Null_param_name_with_bool_value_throws_argument_null_exception()
         {
-            new ParameterCollection().Add(null, true);
+            Assert.Throws<ArgumentNullException>(() => new ParameterCollection().Add(null, true));
         }
 
         /// <summary>
         /// Passing a null parameter throws an argument null exception
         /// </summary>
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Empty_param_name_with_bool_value_throws_argument_exception()
         {
-            new ParameterCollection().Add(string.Empty, true);
+            Assert.Throws<ArgumentException>(() => new ParameterCollection().Add(string.Empty, true));
         }
 
         /// <summary>
         /// Empty value throws argument null exception
         /// </summary>
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Null_value_throws_argument_null_execption()
         {
-            new ParameterCollection().Add("param1", null);
+            Assert.Throws<ArgumentNullException>(() => new ParameterCollection().Add("param1", null));
         }
 
         /// <summary>

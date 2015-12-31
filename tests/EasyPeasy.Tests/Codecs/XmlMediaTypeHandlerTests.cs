@@ -55,7 +55,7 @@ namespace EasyPeasy.Tests.Codecs
         /// <summary>
         /// Tests that an object graph can be written to an output stream
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public void Can_write_object_to_output_stream()
         {
             SimpleDto dto = new SimpleDto();
@@ -81,24 +81,26 @@ namespace EasyPeasy.Tests.Codecs
         /// <summary>
         /// Tests that an object can be read from a stream
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public void Can_read_object_from_stream()
         {
-            const string XmlString = @"<?xml version='1.0'?>
-                    <SimpleDto xmlns='http://schemas.datacontract.org/2004/07/EasyPeasy.Client.Tests.TestTypes'>
-                      <StringProperty>A string</StringProperty>
-                      <IntProperty>10</IntProperty>
-                      <Timestamp>2013-02-25T08:49:06.4602405+00:00</Timestamp>
-                      <NullableDouble>23.456</NullableDouble>
-                    </SimpleDto>";
+            SimpleDto dto = new SimpleDto();
 
-			byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(XmlString);
-            MemoryStream stream = new MemoryStream(jsonBytes);
+            dto.IntProperty = 10;
+            dto.NullableDouble = 23.456;
+            dto.StringProperty = "A string";
+            dto.Timestamp = DateTime.Now;
+
+            MemoryStream stream = new MemoryStream();
+
+            handler.WriteObject(null, dto, stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
 
             object result = handler.ReadObject(null, stream, typeof(SimpleDto));
             Assert.That(result, Is.Not.Null);
 
-            SimpleDto dto = (SimpleDto)result;
+            dto = (SimpleDto)result;
             Assert.That(dto.IntProperty, Is.EqualTo(10));
             Assert.That(dto.StringProperty, Is.EqualTo("A string"));
             Assert.That(dto.StringProperty, Is.EqualTo("A string"));

@@ -176,7 +176,7 @@ namespace EasyPeasy.Tests.Implementation
         /// <summary>
         /// An exception is raised when the path contains a variable that does not have a suitable mapping
         /// </summary>
-        [Test, ExpectedException(typeof(EasyPeasyException))]
+        [Test]
         public void Unknown_path_params_throw_EasyPeasyException()
         {
             Path p = new Path("/{name}/{unknown}");
@@ -185,7 +185,7 @@ namespace EasyPeasy.Tests.Implementation
                     { "name", "replaced" }
                 };
 
-            p.ReplacePathVariables(mapping);
+            Assert.Throws<EasyPeasyException>(() => p.ReplacePathVariables(mapping));
         }
     }
 }
