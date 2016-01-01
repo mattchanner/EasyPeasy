@@ -23,4 +23,17 @@ namespace EasyPeasy.Tests.TestTypes.Reflected
         [POST, Path("/update"), Consumes(MediaType.TextXml), Produces(MediaType.ApplicationOctetStream)]
         Task Update(SimpleDto body);
     }
+
+    /// <summary>
+    /// An undecorated interface to test default behaviour
+    /// </summary>
+    public interface ITestService2
+    {
+        /// <summary>
+        /// Undecorated method
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        Task<CollectionDto> GetData([QueryParam("q")] string query);
+    }
 }
