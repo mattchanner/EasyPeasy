@@ -109,7 +109,7 @@ namespace EasyPeasy.Tests.Implementation
 
         private Type TestService2Interface()
         {
-
+            return typeof(ITestService2);
         }
 
         /// <summary>
