@@ -92,3 +92,11 @@ Being a fan of MEF, the types are all Exportable.  Below is an example of grabbi
     ICustomerService client = factory.Create<ICustomerService>(new Uri("http://server.com"));
     Customer customer = await client.GetCustomerAsync("My Customer");
 ```
+
+### Installation
+
+EasyPeasy is available as a [nuget](https://www.nuget.org/packages/EasyPeasy/) package.  To install type the following at a Package Manager console:
+
+```
+    PM>  Install-Package EasyPeasy
+```
