@@ -15,6 +15,14 @@ Interfaces and methods are annotated using [JAX-RS](http://en.wikipedia.org/wiki
 
 [![Build Status](https://travis-ci.org/mattchanner/EasyPeasy.svg?branch=master)](https://travis-ci.org/mattchanner/EasyPeasy)
 
+### Installation
+
+EasyPeasy is available as a [nuget](https://www.nuget.org/packages/EasyPeasy/) package.  To install type the following at a Package Manager console:
+
+```
+    PM>  Install-Package EasyPeasy
+```
+
 ### Example
 ```csharp
 
@@ -93,10 +101,3 @@ Being a fan of MEF, the types are all Exportable.  Below is an example of grabbi
     Customer customer = await client.GetCustomerAsync("My Customer");
 ```
 
-### Installation
-
-EasyPeasy is available as a [nuget](https://www.nuget.org/packages/EasyPeasy/) package.  To install type the following at a Package Manager console:
-
-```
-    PM>  Install-Package EasyPeasy
-```
