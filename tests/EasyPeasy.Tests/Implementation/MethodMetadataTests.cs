@@ -57,7 +57,7 @@ namespace EasyPeasy.Tests.Implementation
 
             HttpWebRequest request = (HttpWebRequest)CreateRequest(metadata);
 
-            Assert.AreEqual("application/json", request.Accept);
+            Assert.Equals("application/json", request.Accept);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace EasyPeasy.Tests.Implementation
 
             HttpWebRequest request = (HttpWebRequest)CreateRequest(metadata);
 
-            Assert.AreEqual("DELETE", request.Method);
+            Assert.Equals("DELETE", request.Method);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace EasyPeasy.Tests.Implementation
 
             HttpWebRequest request = (HttpWebRequest)CreateRequest(metadata);
 
-            Assert.AreEqual(TestUri, request.RequestUri);
+            Assert.Equals(TestUri, request.RequestUri);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(metadata);
 
-            Assert.AreEqual(Credentials, request.Credentials);
+            Assert.Equals(Credentials, request.Credentials);
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(metadata);
 
-            Assert.AreEqual("Header-Value", request.Headers["Header-Name"]);
+            Assert.Equals("Header-Value", request.Headers["Header-Name"]);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(metadata);
 
-            Assert.AreEqual("application/json", request.ContentType);
+            Assert.Equals("application/json", request.ContentType);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace EasyPeasy.Tests.Implementation
 
             HttpWebRequest request = (HttpWebRequest)CreateRequest(metadata);
 
-            Assert.AreEqual("application/json", request.Accept);
+            Assert.Equals("application/json", request.Accept);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(meta);
 
-            Assert.AreEqual("http://example.com/service/1.0/", request.RequestUri.AbsoluteUri);
+            Assert.Equals("http://example.com/service/1.0/", request.RequestUri.AbsoluteUri);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(meta);
 
-            Assert.AreEqual("http://example.com/api/v1/action", request.RequestUri.AbsoluteUri);
+            Assert.Equals("http://example.com/api/v1/action", request.RequestUri.AbsoluteUri);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(meta);
 
-            Assert.AreEqual("http://example.com/services/1.0/users/matt", request.RequestUri.AbsoluteUri);
+            Assert.Equals("http://example.com/services/1.0/users/matt", request.RequestUri.AbsoluteUri);
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(meta);
 
-            Assert.AreEqual("http://example.com/users/bart%20simpson", request.RequestUri.AbsoluteUri);
+            Assert.Equals("http://example.com/users/bart%20simpson", request.RequestUri.AbsoluteUri);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace EasyPeasy.Tests.Implementation
 
             WebRequest request = CreateRequest(meta);
 
-            Assert.AreEqual("http://example.com/?q=test&q2=test2", request.RequestUri.AbsoluteUri);
+            Assert.Equals("http://example.com/?q=test&q2=test2", request.RequestUri.AbsoluteUri);
         }
 
         private WebRequest CreateRequest(MethodMetadata metadata)

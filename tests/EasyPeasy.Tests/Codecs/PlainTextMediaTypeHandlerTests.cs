@@ -68,7 +68,7 @@ namespace EasyPeasy.Tests.Codecs
             byte[] bytes = stream.ToArray();
             string deserialized = System.Text.Encoding.UTF8.GetString(bytes);
 
-            Assert.AreEqual(SourceString, deserialized);
+            Assert.Equals(SourceString, deserialized);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace EasyPeasy.Tests.Codecs
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<string>());
             string stringResult = (string)result;
-            Assert.AreEqual(SourceString, stringResult);
+            Assert.Equals(SourceString, stringResult);
         }
     }
 }

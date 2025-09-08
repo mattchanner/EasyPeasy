@@ -53,7 +53,7 @@ namespace EasyPeasy.Tests.Implementation
 
             HttpVerb method = ReflectionUtils.DetermineHttpVerb(getDataMethod);
 
-            Assert.AreEqual(HttpVerb.GET, method);
+            Assert.Equals(HttpVerb.GET, method);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace EasyPeasy.Tests.Implementation
 
             HttpVerb method = ReflectionUtils.DetermineHttpVerb(updateMethod);
 
-            Assert.AreEqual(HttpVerb.POST, method);
+            Assert.Equals(HttpVerb.POST, method);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace EasyPeasy.Tests.Implementation
 
             string mediaType = ReflectionUtils.DetermineConsumesMediaType(getDataMethod, string.Empty);
 
-            Assert.AreEqual(MediaType.ApplicationJson, mediaType);
+            Assert.Equals(MediaType.ApplicationJson, mediaType);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace EasyPeasy.Tests.Implementation
 
             string mediaType = ReflectionUtils.DetermineConsumesMediaType(updateMethod, string.Empty);
 
-            Assert.AreEqual(MediaType.TextXml, mediaType);
+            Assert.Equals(MediaType.TextXml, mediaType);
         }
 
         /// <summary>
