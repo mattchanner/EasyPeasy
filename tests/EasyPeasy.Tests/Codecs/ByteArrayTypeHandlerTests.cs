@@ -28,6 +28,7 @@ using System.IO;
 using EasyPeasy.Codecs;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace EasyPeasy.Tests.Codecs
 {
@@ -65,7 +66,7 @@ namespace EasyPeasy.Tests.Codecs
 
             string result = System.Text.Encoding.UTF8.GetString(body.ToArray());
 
-            Assert.AreEqual(SourceString, result);
+            Assert.Equals(SourceString, result);
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace EasyPeasy.Tests.Codecs
             Assert.That(result, Is.InstanceOf<byte[]>());
 
             byte[] arrayResult = (byte[])result;
-            CollectionAssert.AreEqual(source, arrayResult);
+            CollectionAssert.Equals(source, arrayResult);
         }
     }
 }

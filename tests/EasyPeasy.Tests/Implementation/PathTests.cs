@@ -142,7 +142,7 @@ namespace EasyPeasy.Tests.Implementation
         public void Path_to_string_returns_path()
         {
             Path p = new Path("/path/to/resource");
-            Assert.AreEqual(p.FullPath, p.ToString());
+            Assert.Equals(p.FullPath, p.ToString());
         }
 
         /// <summary>
