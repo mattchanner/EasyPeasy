@@ -1,25 +1,25 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="MethodMetadata.cs">
 //
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the “Software”),
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a
+//  copy of this software and associated documentation files (the "Software"),
+//  to deal in the Software without restriction, including without limitation
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//  and/or sell copies of the Software, and to permit persons to whom the
 //  Software is furnished to do so, subject to the following conditions:
 //
-//  The above copyright notice and this permission notice shall be included 
+//  The above copyright notice and this permission notice shall be included
 //  in all copies or substantial portions of the Software.
 //
-//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -29,6 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using EasyPeasy.Http;
 
 namespace EasyPeasy.Implementation
 {
@@ -46,7 +50,7 @@ namespace EasyPeasy.Implementation
 
         /// <summary> The query parameters. </summary>
         private ParameterCollection queryParameters;
-        
+
         /// <summary> The form parameter. </summary>
         private ParameterCollection formParameters;
 
@@ -123,7 +127,7 @@ namespace EasyPeasy.Implementation
         /// <param name="parameterName"> The parameter name. </param>
         /// <param name="parameterValue"> The parameter value. </param>
         public void AddFormParameter(string parameterName, object parameterValue)
-        {            
+        {
             this.formParameters.MaybeAdd(parameterName, parameterValue);
         }
 
@@ -138,61 +142,96 @@ namespace EasyPeasy.Implementation
         }
 
         /// <summary>
-        /// Creates a web request based on the information held within this class
+        /// Creates an HTTP request based on the information held within this class
         /// </summary>
         /// <param name="baseUri"> The base Uri. </param>
         /// <param name="credentials"> The credentials. </param>
         /// <param name="mediaRegistry"> The registry of media type handlers</param>
-        /// <returns> The created request </returns>
-        public WebRequest CreateRequest(
-            Uri baseUri, 
-            ICredentials credentials, 
+        /// <returns> A tuple containing the HttpRequestMessage and its IHttpRequest wrapper </returns>
+        public (HttpRequestMessage, HttpRequestWrapper) CreateRequest(
+            Uri baseUri,
+            ICredentials credentials,
             IMediaTypeHandlerRegistry mediaRegistry)
         {
             Uri fullUri = this.CreateUri(baseUri);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullUri);
-            
-            request.Credentials = credentials;
-            request.Method = this.Verb.ToString();
-			request.ContentType  = this.Produces;
-            request.Accept = this.Consumes;
+            HttpMethod method = GetHttpMethod(this.Verb);
+            HttpRequestMessage request = new HttpRequestMessage(method, fullUri);
+            HttpRequestWrapper wrapper = new HttpRequestWrapper(request);
 
+            // Set Accept header
+            if (!string.IsNullOrEmpty(this.Consumes))
+            {
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(this.Consumes));
+                wrapper.Accept = this.Consumes;
+            }
+
+            // Add custom headers
             foreach (var kv in this.headerParameters.Where(kv => kv.Value != null && kv.Key != null))
             {
-                // WebRequest throws exceptions if the Accept and Content-Type headers are set indirectly,
-                // so need to check for these explicitly and set the associated properties if found
                 if (string.Compare(kv.Key, AcceptsHeader, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    request.Accept = Convert.ToString(kv.Value);
+                    request.Headers.Accept.Clear();
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Convert.ToString(kv.Value)));
                 }
-                else if (string.Compare(kv.Key, ContentTypeHeader, StringComparison.InvariantCultureIgnoreCase) == 0)
+                else if (string.Compare(kv.Key, ContentTypeHeader, StringComparison.InvariantCultureIgnoreCase) != 0)
                 {
-                    request.ContentType = Convert.ToString(kv.Value);
-                }
-                else
-                {
-                    request.Headers.Add(kv.Key, Convert.ToString(kv.Value));    
+                    request.Headers.TryAddWithoutValidation(kv.Key, Convert.ToString(kv.Value));
                 }
             }
 
             // Choose between form parameters and a body - cannot have both
             if (this.formParameters.Count > 0)
             {
-                Stream requestStream = request.GetRequestStream();
-                StreamWriter writer = new StreamWriter(requestStream);
-                writer.Write(this.formParameters.ToString());
-                writer.Flush();
+                var formContent = new StringContent(this.formParameters.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
+                request.Content = formContent;
+                wrapper.ContentType = "application/x-www-form-urlencoded";
             }
             else if (this.RequestBody != null)
             {
                 IMediaTypeHandler handler;
-				if (mediaRegistry.TryGetHandler(this.RequestBody.GetType(), this.Produces, out handler))
+                if (mediaRegistry.TryGetHandler(this.RequestBody.GetType(), this.Produces, out handler))
                 {
-                    handler.WriteObject(request, this.RequestBody, request.GetRequestStream());
+                    var memoryStream = new MemoryStream();
+                    handler.WriteObject(wrapper, this.RequestBody, memoryStream);
+                    memoryStream.Position = 0;
+
+                    var streamContent = new StreamContent(memoryStream);
+                    if (!string.IsNullOrEmpty(this.Produces))
+                    {
+                        streamContent.Headers.ContentType = new MediaTypeHeaderValue(this.Produces);
+                    }
+                    request.Content = streamContent;
+                    wrapper.ContentType = this.Produces;
                 }
             }
 
-            return request;
+            return (request, wrapper);
+        }
+
+        /// <summary>
+        /// Gets the HttpMethod for the given verb
+        /// </summary>
+        /// <param name="verb">The HTTP verb</param>
+        /// <returns>The HttpMethod</returns>
+        private static HttpMethod GetHttpMethod(HttpVerb verb)
+        {
+            switch (verb)
+            {
+                case HttpVerb.GET:
+                    return HttpMethod.Get;
+                case HttpVerb.POST:
+                    return HttpMethod.Post;
+                case HttpVerb.PUT:
+                    return HttpMethod.Put;
+                case HttpVerb.DELETE:
+                    return HttpMethod.Delete;
+                case HttpVerb.HEAD:
+                    return HttpMethod.Head;
+                case HttpVerb.OPTIONS:
+                    return HttpMethod.Options;
+                default:
+                    return HttpMethod.Get;
+            }
         }
 
         /// <summary>

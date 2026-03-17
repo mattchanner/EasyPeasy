@@ -1,25 +1,25 @@
-﻿// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
 // <copyright file="DefaultMediaTypeRegistry.cs">
-// 
+//
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-//    
-//     Permission is hereby granted, free of charge, to any person obtaining a 
-//     copy of this software and associated documentation files (the “Software”),
-//     to deal in the Software without restriction, including without limitation 
-//     the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//     and/or sell copies of the Software, and to permit persons to whom the 
+//
+//     Permission is hereby granted, free of charge, to any person obtaining a
+//     copy of this software and associated documentation files (the "Software"),
+//     to deal in the Software without restriction, including without limitation
+//     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//     and/or sell copies of the Software, and to permit persons to whom the
 //     Software is furnished to do so, subject to the following conditions:
-//   
-//     The above copyright notice and this permission notice shall be included 
+//
+//     The above copyright notice and this permission notice shall be included
 //     in all copies or substantial portions of the Software.
-//   
-//     THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //     THE SOFTWARE.
 // </copyright>
 // -----------------------------------------------------------------------------------
@@ -27,11 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Drawing.Imaging;
 using System.IO;
 
 using EasyPeasy.Codecs;
 using EasyPeasy.Implementation;
+using SkiaSharp;
 
 namespace EasyPeasy
 {
@@ -60,11 +60,11 @@ namespace EasyPeasy
             RegisterMediaTypeHandler(MediaType.ApplicationJson, new JsonMediaTypeHandler());
             RegisterMediaTypeHandler(MediaType.TextHtml, new PlainTextMediaTypeHandler());
             RegisterMediaTypeHandler(MediaType.TextPlain, new PlainTextMediaTypeHandler());
-            RegisterMediaTypeHandler(MediaType.ImageBMP, new ImageMediaTypeHandler(ImageFormat.Bmp));
-            RegisterMediaTypeHandler(MediaType.ImageGIF, new ImageMediaTypeHandler(ImageFormat.Gif));
-            RegisterMediaTypeHandler(MediaType.ImageJPG, new ImageMediaTypeHandler(ImageFormat.Jpeg));
-            RegisterMediaTypeHandler(MediaType.ImagePNG, new ImageMediaTypeHandler(ImageFormat.Png));
-            RegisterMediaTypeHandler(MediaType.ImageTIFF, new ImageMediaTypeHandler(ImageFormat.Tiff));
+            RegisterMediaTypeHandler(MediaType.ImageBMP, new ImageMediaTypeHandler(SKEncodedImageFormat.Bmp));
+            RegisterMediaTypeHandler(MediaType.ImageGIF, new ImageMediaTypeHandler(SKEncodedImageFormat.Gif));
+            RegisterMediaTypeHandler(MediaType.ImageJPG, new ImageMediaTypeHandler(SKEncodedImageFormat.Jpeg));
+            RegisterMediaTypeHandler(MediaType.ImagePNG, new ImageMediaTypeHandler(SKEncodedImageFormat.Png));
+            RegisterMediaTypeHandler(MediaType.ImageTIFF, new ImageMediaTypeHandler(SKEncodedImageFormat.Png)); // TIFF not directly supported, fallback to PNG
 
             RegisterCustomTypeHandler(typeof(byte[]), new ByteArrayTypeHandler());
             RegisterCustomTypeHandler(typeof(string), new PlainTextMediaTypeHandler());
@@ -126,7 +126,7 @@ namespace EasyPeasy
             Ensure.IsNotNull(objectType, "objectType");
             Ensure.IsNotNullOrEmpty(mediaType, "mediaType");
 
-            return this.typeSpecificHandlers.TryGetValue(objectType, out handler) || 
+            return this.typeSpecificHandlers.TryGetValue(objectType, out handler) ||
                    this.mediaTypeHandlers.TryGetValue(mediaType, out handler);
         }
     }

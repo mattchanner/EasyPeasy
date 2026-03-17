@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IServiceClient.cs">
+// <copyright file="HttpResponseWrapper.cs">
 //
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
@@ -25,43 +25,51 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
-namespace EasyPeasy
+namespace EasyPeasy.Http
 {
     /// <summary>
-    /// Represents the client interface that all proxy services will implement in addition to the one requested
-    /// by the caller.
+    /// Wraps an HttpResponseMessage to implement IHttpResponse
     /// </summary>
-    public interface IServiceClient
+    internal class HttpResponseWrapper : IHttpResponse
     {
-        /// <summary> Raised once a request is constructed, and before it is sent. </summary>
-        event EventHandler<HttpRequestEventArgs> BeforeSend;
-
-        /// <summary> Raised once a response has been received. </summary>
-        event EventHandler<HttpResponseEventArgs> ResponseReceived;
-
-        /// <summary> Raised when an exception is returned by the server </summary>
-        event EventHandler<HttpExceptionEventArgs> ExceptionReceived;
+        private readonly HttpResponseMessage response;
 
         /// <summary>
-        /// Gets or sets the base URI to use for each service method
+        /// Initializes a new instance of the <see cref="HttpResponseWrapper"/> class.
         /// </summary>
-        Uri BaseUri { get; set; }
+        /// <param name="response">The underlying response</param>
+        public HttpResponseWrapper(HttpResponseMessage response)
+        {
+            this.response = response ?? throw new ArgumentNullException(nameof(response));
+        }
 
         /// <summary>
-        /// Gets or sets the amount of time to wait for a request before timing out
+        /// Gets the HTTP status code
         /// </summary>
-        TimeSpan Timeout { get; set; }
+        public HttpStatusCode StatusCode => response.StatusCode;
 
         /// <summary>
-        /// Gets or sets the credentials to be sent with each service request
+        /// Gets the content type
         /// </summary>
-        ICredentials Credentials { get; set; }
+        public string ContentType => response.Content?.Headers?.ContentType?.MediaType;
 
         /// <summary>
-        /// Gets or sets the registry to use for serializing types
+        /// Gets the response stream asynchronously
         /// </summary>
-        IMediaTypeHandlerRegistry MediaRegistry { get; set; }
+        /// <returns>The response stream</returns>
+        public Task<Stream> GetResponseStreamAsync()
+        {
+            return response.Content.ReadAsStreamAsync();
+        }
+
+        /// <summary>
+        /// Gets the underlying HttpResponseMessage
+        /// </summary>
+        public HttpResponseMessage UnderlyingResponse => response;
     }
 }

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IServiceClient.cs">
+// <copyright file="IHttpResponse.cs">
 //
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
@@ -24,44 +24,37 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
+using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
-namespace EasyPeasy
+namespace EasyPeasy.Http
 {
     /// <summary>
-    /// Represents the client interface that all proxy services will implement in addition to the one requested
-    /// by the caller.
+    /// Represents an HTTP response abstraction
     /// </summary>
-    public interface IServiceClient
+    public interface IHttpResponse
     {
-        /// <summary> Raised once a request is constructed, and before it is sent. </summary>
-        event EventHandler<HttpRequestEventArgs> BeforeSend;
-
-        /// <summary> Raised once a response has been received. </summary>
-        event EventHandler<HttpResponseEventArgs> ResponseReceived;
-
-        /// <summary> Raised when an exception is returned by the server </summary>
-        event EventHandler<HttpExceptionEventArgs> ExceptionReceived;
+        /// <summary>
+        /// Gets the HTTP status code
+        /// </summary>
+        HttpStatusCode StatusCode { get; }
 
         /// <summary>
-        /// Gets or sets the base URI to use for each service method
+        /// Gets the content type
         /// </summary>
-        Uri BaseUri { get; set; }
+        string ContentType { get; }
 
         /// <summary>
-        /// Gets or sets the amount of time to wait for a request before timing out
+        /// Gets the response stream asynchronously
         /// </summary>
-        TimeSpan Timeout { get; set; }
+        /// <returns>The response stream</returns>
+        Task<Stream> GetResponseStreamAsync();
 
         /// <summary>
-        /// Gets or sets the credentials to be sent with each service request
+        /// Gets the underlying HttpResponseMessage
         /// </summary>
-        ICredentials Credentials { get; set; }
-
-        /// <summary>
-        /// Gets or sets the registry to use for serializing types
-        /// </summary>
-        IMediaTypeHandlerRegistry MediaRegistry { get; set; }
+        HttpResponseMessage UnderlyingResponse { get; }
     }
 }

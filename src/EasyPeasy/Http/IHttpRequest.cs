@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IServiceClient.cs">
+// <copyright file="IHttpRequest.cs">
 //
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
@@ -25,43 +25,53 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Net;
+using System.IO;
+using System.Net.Http;
 
-namespace EasyPeasy
+namespace EasyPeasy.Http
 {
     /// <summary>
-    /// Represents the client interface that all proxy services will implement in addition to the one requested
-    /// by the caller.
+    /// Represents an HTTP request abstraction
     /// </summary>
-    public interface IServiceClient
+    public interface IHttpRequest
     {
-        /// <summary> Raised once a request is constructed, and before it is sent. </summary>
-        event EventHandler<HttpRequestEventArgs> BeforeSend;
-
-        /// <summary> Raised once a response has been received. </summary>
-        event EventHandler<HttpResponseEventArgs> ResponseReceived;
-
-        /// <summary> Raised when an exception is returned by the server </summary>
-        event EventHandler<HttpExceptionEventArgs> ExceptionReceived;
+        /// <summary>
+        /// Gets the request URI
+        /// </summary>
+        Uri RequestUri { get; }
 
         /// <summary>
-        /// Gets or sets the base URI to use for each service method
+        /// Gets the HTTP method
         /// </summary>
-        Uri BaseUri { get; set; }
+        string Method { get; }
 
         /// <summary>
-        /// Gets or sets the amount of time to wait for a request before timing out
+        /// Gets or sets the content type
         /// </summary>
-        TimeSpan Timeout { get; set; }
+        string ContentType { get; set; }
 
         /// <summary>
-        /// Gets or sets the credentials to be sent with each service request
+        /// Gets or sets the accept header
         /// </summary>
-        ICredentials Credentials { get; set; }
+        string Accept { get; set; }
 
         /// <summary>
-        /// Gets or sets the registry to use for serializing types
+        /// Sets a header value
         /// </summary>
-        IMediaTypeHandlerRegistry MediaRegistry { get; set; }
+        /// <param name="name">The header name</param>
+        /// <param name="value">The header value</param>
+        void SetHeader(string name, string value);
+
+        /// <summary>
+        /// Gets a header value
+        /// </summary>
+        /// <param name="name">The header name</param>
+        /// <returns>The header value, or null if not set</returns>
+        string GetHeader(string name);
+
+        /// <summary>
+        /// Gets the underlying HttpRequestMessage
+        /// </summary>
+        HttpRequestMessage UnderlyingRequest { get; }
     }
 }
