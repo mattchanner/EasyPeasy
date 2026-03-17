@@ -1,39 +1,40 @@
-﻿// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // <copyright file="Program.cs">
-// 
+//
 //  The MIT License (MIT)
 //  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the “Software”),
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a
+//  copy of this software and associated documentation files (the "Software"),
+//  to deal in the Software without restriction, including without limitation
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//  and/or sell copies of the Software, and to permit persons to whom the
 //  Software is furnished to do so, subject to the following conditions:
 //
-//  The above copyright notice and this permission notice shall be included 
+//  The above copyright notice and this permission notice shall be included
 //  in all copies or substantial portions of the Software.
 //
-//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 // </copyright>
 // ------------------------------------------------------------------------------
 
 using System;
-using System.ComponentModel.Composition.Hosting;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using EasyPeasy.Example;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyPeasy;
 
-/// <summary> 
+/// <summary>
 /// An example client, showing how to use EasyPeasy to generate a usable client
 /// from a configured service interface.
 /// </summary>
@@ -47,21 +48,21 @@ public class Program
 
     private async Task RunExamples()
     {
-        // This is the based address of the server which gets passed into the 
+        // This is the based address of the server which gets passed into the
         // creation method
         Uri baseAddress = new Uri("http://localhost:9000");
 
-        // The factory can be created using MEF, the following is an example of how
-        // you could do this:
-        AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
-        CompositionContainer container = new CompositionContainer(catalog);
+        // The factory can be created using dependency injection:
+        var services = new ServiceCollection();
+        services.AddEasyPeasy();
 
-        IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
+        var serviceProvider = services.BuildServiceProvider();
+        IEasyPeasyFactory factory = serviceProvider.GetRequiredService<IEasyPeasyFactory>();
 
         // Interceptors can be added to the factory to perform actions on the HTTP request and
         // response objects.  This example simply logs out the events to the console
         factory.AddInterceptor(new LoggingInterceptor());
-        
+
         // An alternative would be the more direct way:
         // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
 
@@ -69,7 +70,7 @@ public class Program
         // The implementation is configured via the interface attributes to determine each
         // methods end point, serialization formats etc.
         IContactServiceAsync contactService = factory.Create<IContactServiceAsync>(baseAddress);
-        
+
         // The following are examples of using the implementation
 
         // 1 - fetch a list of contacts from the server and print them out

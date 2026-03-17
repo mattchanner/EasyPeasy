@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 
 using EasyPeasy.Codecs;
@@ -38,7 +37,6 @@ namespace EasyPeasy
     /// <summary>
     /// The pre configured registry used by default when not provided by a client
     /// </summary>
-    [Export(typeof(IMediaTypeHandlerRegistry))]
     public class DefaultMediaTypeRegistry : IMediaTypeHandlerRegistry
     {
         /// <summary> The type specific media handlers to be used in preference of the standard media types </summary>

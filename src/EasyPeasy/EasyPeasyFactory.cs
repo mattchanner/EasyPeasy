@@ -30,7 +30,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -47,7 +46,6 @@ namespace EasyPeasy
     /// <summary>
     /// An implementation of the <see cref="IEasyPeasyFactory"/> interface.
     /// </summary>
-    [Export(typeof(IEasyPeasyFactory))]
     public class EasyPeasyFactory : IEasyPeasyFactory
     {
         /// <summary> The attributes to apply to the new class </summary>
@@ -87,7 +85,6 @@ namespace EasyPeasy
         /// Initializes a new instance of the <see cref="EasyPeasyFactory"/> class.
         /// </summary>
         /// <param name="registry"> The registry. </param>
-        [ImportingConstructor]
         public EasyPeasyFactory(IMediaTypeHandlerRegistry registry)
         {
             Ensure.IsNotNull(registry, "registry");
