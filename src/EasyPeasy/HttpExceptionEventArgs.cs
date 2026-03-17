@@ -1,6 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IRequestInterceptor.cs">
-//
+// <copyright file="HttpExceptionEventArgs.cs">
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
 //
@@ -24,32 +23,28 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Net.Http;
-using EasyPeasy.Http;
 
 namespace EasyPeasy
 {
     /// <summary>
-    /// Represents a filter that can be added to the request pipeline
+    /// HTTP exception event args.
     /// </summary>
-    public interface IRequestInterceptor
+    public class HttpExceptionEventArgs : EventArgs
     {
         /// <summary>
-        /// Called before a request is made to the server
-        /// </summary>
-        /// <param name="request"> The request being sent. </param>
-        void OnBeforeSend(IHttpRequest request);
-
-        /// <summary>
-        /// Called once a response has been received from the server
-        /// </summary>
-        /// <param name="response">The received response</param>
-        void OnReceive(IHttpResponse response);
-
-        /// <summary>
-        /// Receives notifications about an error
+        /// Initializes a new instance of the <see cref="HttpExceptionEventArgs"/> class.
         /// </summary>
         /// <param name="exception"> The exception. </param>
-        void OnError(HttpRequestException exception);
+        public HttpExceptionEventArgs(HttpRequestException exception)
+        {
+            Exception = exception;
+        }
+
+        /// <summary>
+        /// Gets the exception.
+        /// </summary>
+        public HttpRequestException Exception { get; private set; }
     }
 }

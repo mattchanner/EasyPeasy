@@ -1,25 +1,25 @@
-﻿// ---------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 // <copyright file="ValueTypeHandler.cs">
 //
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-//    
-//     Permission is hereby granted, free of charge, to any person obtaining a 
-//     copy of this software and associated documentation files (the “Software”),
-//     to deal in the Software without restriction, including without limitation 
-//     the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//     and/or sell copies of the Software, and to permit persons to whom the 
+//
+//     Permission is hereby granted, free of charge, to any person obtaining a
+//     copy of this software and associated documentation files (the "Software"),
+//     to deal in the Software without restriction, including without limitation
+//     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//     and/or sell copies of the Software, and to permit persons to whom the
 //     Software is furnished to do so, subject to the following conditions:
-//   
-//     The above copyright notice and this permission notice shall be included 
+//
+//     The above copyright notice and this permission notice shall be included
 //     in all copies or substantial portions of the Software.
-//   
-//     THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+//
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //     THE SOFTWARE.
 // </copyright>
 // <summary>
@@ -30,7 +30,7 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Net;
+using EasyPeasy.Http;
 
 namespace EasyPeasy.Codecs
 {
@@ -54,10 +54,10 @@ namespace EasyPeasy.Codecs
         /// <summary>
         /// When called, this method is responsible for writing the value to the stream
         /// </summary>
-        /// <param name="request">The web request being written to </param>
+        /// <param name="request">The HTTP request being written to </param>
         /// <param name="value">The value to write</param>
         /// <param name="body">The stream to write to</param>
-        public void WriteObject(WebRequest request, object value, Stream body)
+        public void WriteObject(IHttpRequest request, object value, Stream body)
         {
             BinaryWriter writer = new BinaryWriter(body);
 
@@ -124,7 +124,7 @@ namespace EasyPeasy.Codecs
         /// <param name="body"> The stream to write to </param>
         /// <param name="objectType"> The type to de-serialize.  </param>
         /// <returns> The <see cref="object"/> read from the stream.   </returns>
-        public object ReadObject(WebResponse response, Stream body, Type objectType)
+        public object ReadObject(IHttpResponse response, Stream body, Type objectType)
         {
             BinaryReader reader = new BinaryReader(body);
 
@@ -159,12 +159,6 @@ namespace EasyPeasy.Codecs
                 case TypeCode.DateTime:
                     string dateTimeString = reader.ReadString();
                     return DateTime.Parse(dateTimeString, CultureInfo.InvariantCulture);
-                /*
-                case TypeCode.Empty:
-                case TypeCode.Object:
-                case TypeCode.DBNull:
-                case TypeCode.String:
-                 * */
                 default:
                     throw new EasyPeasyException("TypeCode not supported by serializer: " + typeCode);
             }

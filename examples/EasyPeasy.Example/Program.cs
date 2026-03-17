@@ -31,100 +31,99 @@ using EasyPeasy.Example;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace EasyPeasy
+namespace EasyPeasy;
+
+/// <summary> 
+/// An example client, showing how to use EasyPeasy to generate a usable client
+/// from a configured service interface.
+/// </summary>
+public class Program
 {
-    /// <summary> 
-    /// An example client, showing how to use EasyPeasy to generate a usable client
-    /// from a configured service interface.
-    /// </summary>
-    public class Program
+    public static async Task Main()
     {
-        public static void Main()
+        await new Program().RunExamples();
+        Console.ReadKey();
+    }
+
+    private async Task RunExamples()
+    {
+        // This is the based address of the server which gets passed into the 
+        // creation method
+        Uri baseAddress = new Uri("http://localhost:9000");
+
+        // The factory can be created using MEF, the following is an example of how
+        // you could do this:
+        AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
+        CompositionContainer container = new CompositionContainer(catalog);
+
+        IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
+
+        // Interceptors can be added to the factory to perform actions on the HTTP request and
+        // response objects.  This example simply logs out the events to the console
+        factory.AddInterceptor(new LoggingInterceptor());
+        
+        // An alternative would be the more direct way:
+        // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
+
+        // Auto generate an implementation of the IContactService interface.
+        // The implementation is configured via the interface attributes to determine each
+        // methods end point, serialization formats etc.
+        IContactServiceAsync contactService = factory.Create<IContactServiceAsync>(baseAddress);
+        
+        // The following are examples of using the implementation
+
+        // 1 - fetch a list of contacts from the server and print them out
+        // This method call maps to:
+        // GET http://localhost:9000/api/contact
+        List<Contact> contacts = await contactService.GetContactsAsync();
+        foreach (var contact in contacts)
         {
-            new Program().RunExamples().Wait();
-            Console.ReadKey();
+            Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
         }
 
-        private async Task RunExamples()
+        // Fetch a specific contact.  The value passed in here is used in the URL
+        // GET http://localhost:9000/api/contact/Contact1
+        Contact singleContact = await contactService.GetContactAsync("Contact1");
+        Console.WriteLine("Fetched contact by name, Name: {0}, Address: {1}", singleContact.Name, singleContact.Address);
+
+        singleContact.Address = "Changed Address";
+
+        Console.WriteLine("Updating address for contact1");
+
+        // Updates the contact on the server.  The supplied name is mapped to the URL,
+        // the contact is serialized to the body as XML based on the Produces attribute
+        await contactService.UpdateContactAsync(singleContact.Name, singleContact);
+
+        // Another example of updating the address for a contact. This example
+        // uses form encoded parameters to send the data:
+        //
+        // PUT   http://localhost:9000/api/contact/Contact3
+        // BODY: address=Updated_using_form_param
+        await contactService.UpdateContactAsync("Contact3", "Updated_using_form_param");
+
+        // Show the updates worked by reloading the data and printing the updated values
+        Console.WriteLine("Re-fetching contact list");
+        List<Contact> fetchedContacts = await contactService.GetContactsAsync();
+        foreach (Contact contact in fetchedContacts)
         {
-            // This is the based address of the server which gets passed into the 
-            // creation method
-            Uri baseAddress = new Uri("http://localhost:9000");
-
-            // The factory can be created using MEF, the following is an example of how
-            // you could do this:
-            AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
-            CompositionContainer container = new CompositionContainer(catalog);
-
-            IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
-
-            // Interceptors can be added to the factory to perform actions on the HTTP request and
-            // response objects.  This example simply logs out the events to the console
-            factory.AddInterceptor(new LoggingInterceptor());
-            
-            // An alternative would be the more direct way:
-            // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
-
-            // Auto generate an implementation of the IContactService interface.
-            // The implementation is configured via the interface attributes to determine each
-            // methods end point, serialization formats etc.
-            IContactServiceAsync contactService = factory.Create<IContactServiceAsync>(baseAddress);
-            
-            // The following are examples of using the implementation
-
-            // 1 - fetch a list of contacts from the server and print them out
-            // This method call maps to:
-            // GET http://localhost:9000/api/contact
-            List<Contact> contacts = await contactService.GetContactsAsync();
-            foreach (var contact in contacts)
-            {
-                Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-            }
-
-            // Fetch a specific contact.  The value passed in here is used in the URL
-            // GET http://localhost:9000/api/contact/Contact1
-            Contact singleContact = await contactService.GetContactAsync("Contact1");
-            Console.WriteLine("Fetched contact by name, Name: {0}, Address: {1}", singleContact.Name, singleContact.Address);
-
-            singleContact.Address = "Changed Address";
-
-            Console.WriteLine("Updating address for contact1");
-
-            // Updates the contact on the server.  The supplied name is mapped to the URL,
-            // the contact is serialized to the body as XML based on the Produces attribute
-            await contactService.UpdateContactAsync(singleContact.Name, singleContact);
-
-            // Another example of updating the address for a contact. This example
-            // uses form encoded parameters to send the data:
-            //
-            // PUT   http://localhost:9000/api/contact/Contact3
-            // BODY: address=Updated_using_form_param
-            await contactService.UpdateContactAsync("Contact3", "Updated_using_form_param");
-
-            // Show the updates worked by reloading the data and printing the updated values
-            Console.WriteLine("Re-fetching contact list");
-            List<Contact> fetchedContacts = await contactService.GetContactsAsync();
-            foreach (Contact contact in fetchedContacts)
-            {
-                Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-            }
-
-            // Deletes a contact on the server using similar path mappings.
-            // The DELETE attribute determines the verb to use:
-            //
-            // DELETE http://localhost:9000/api/contact/Contact1
-            Console.WriteLine("Deleting contact 1");
-            await contactService.DeleteContactAsync("Contact1");
-
-            // Reload to show the contact has been deleted
-            Console.WriteLine("Re-fetching contact list");
-            fetchedContacts = await contactService.GetContactsAsync();
-            foreach (Contact contact in fetchedContacts)
-            {
-                Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-            }
-
-            Console.WriteLine("Saved assembly to " + factory.SaveGeneratedAssembly().FullName);
+            Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
         }
+
+        // Deletes a contact on the server using similar path mappings.
+        // The DELETE attribute determines the verb to use:
+        //
+        // DELETE http://localhost:9000/api/contact/Contact1
+        Console.WriteLine("Deleting contact 1");
+        await contactService.DeleteContactAsync("Contact1");
+
+        // Reload to show the contact has been deleted
+        Console.WriteLine("Re-fetching contact list");
+        fetchedContacts = await contactService.GetContactsAsync();
+        foreach (Contact contact in fetchedContacts)
+        {
+            Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
+        }
+
+        Console.WriteLine("Done!");
     }
 }

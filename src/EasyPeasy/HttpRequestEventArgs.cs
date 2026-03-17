@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ByteArrayTypeHandler.cs">
+// <copyright file="HttpRequestEventArgs.cs">
 //   The MIT License (MIT)
 //     Copyright © 2013 Matt Channer (mchanner at gmail dot com)
 //
@@ -24,53 +24,27 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 using EasyPeasy.Http;
 
-namespace EasyPeasy.Codecs
+namespace EasyPeasy
 {
     /// <summary>
-    /// A type handler for byte arrays.
+    /// HTTP request event arguments.
     /// </summary>
-    internal class ByteArrayTypeHandler : IMediaTypeHandler
+    public class HttpRequestEventArgs : EventArgs
     {
-        /// <summary> The buffer size. </summary>
-        private const int BufferSize = 16 * 1024;
-
         /// <summary>
-        /// When called, this method is responsible for writing the value to the stream
+        /// Initializes a new instance of the <see cref="HttpRequestEventArgs"/> class.
         /// </summary>
-        /// <param name="request">The HTTP request being written to </param>
-        /// <param name="value">The value to write</param>
-        /// <param name="body">The stream to write to</param>
-        public void WriteObject(IHttpRequest request, object value, Stream body)
+        /// <param name="request"> The HTTP request. </param>
+        public HttpRequestEventArgs(IHttpRequest request)
         {
-            byte[] bytes = (byte[])value;
-            body.Write(bytes, 0, bytes.Length);
+            Request = request;
         }
 
         /// <summary>
-        /// When called, this method is responsible for reading the contents of the body stream in order
-        /// to generate a response of the type appropriate for the defined media type.
+        /// Gets the HTTP request.
         /// </summary>
-        /// <param name="response"> The response being read from. </param>
-        /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The type to de-serialize.  </param>
-        /// <returns> The <see cref="object"/> read from the stream.   </returns>
-        public object ReadObject(IHttpResponse response, Stream body, Type objectType)
-        {
-            MemoryStream buffer = new MemoryStream();
-
-            byte[] bytes = new byte[BufferSize];
-
-            int bytesRead;
-
-            while ((bytesRead = body.Read(bytes, 0, BufferSize)) > 0)
-            {
-                buffer.Write(bytes, 0, bytesRead);
-            }
-
-            return buffer.ToArray();
-        }
+        public IHttpRequest Request { get; private set; }
     }
 }
