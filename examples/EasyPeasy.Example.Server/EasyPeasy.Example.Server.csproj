@@ -1,15 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <OutputType>Exe</OutputType>
-    <AssemblyTitle>EasyPeasy.Example.Server</AssemblyTitle>
-    <Copyright>Copyright © 2015</Copyright>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CA1515;CA1822</NoWarn>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\EasyPeasy.Example.Models\EasyPeasy.Example.Models.csproj" />
   </ItemGroup>
+
 </Project>

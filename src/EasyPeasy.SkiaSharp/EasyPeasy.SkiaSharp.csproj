@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Send and receive SkiaSharp images (SKBitmap, SKImage) with EasyPeasy clients.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyPeasy\EasyPeasy.csproj" />
+  </ItemGroup>
+
+</Project>

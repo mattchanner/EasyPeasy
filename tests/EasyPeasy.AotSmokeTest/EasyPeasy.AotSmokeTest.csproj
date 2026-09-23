@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Published with Native AOT in CI: `dotnet publish -c Release` then run the executable.
+    Any trimming or AOT warning from EasyPeasy fails the publish (warnings are errors).
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PublishAot Condition="'$(SmokeTestMode)' != 'Trimmed'">true</PublishAot>
+    <!-- -p:SmokeTestMode=Trimmed publishes trimmed but not AOT, for machines without a native linker. -->
+    <PublishTrimmed Condition="'$(SmokeTestMode)' == 'Trimmed'">true</PublishTrimmed>
+    <SelfContained Condition="'$(SmokeTestMode)' == 'Trimmed'">true</SelfContained>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <NoWarn>$(NoWarn);CA1515;CA2007;CA1050</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyPeasy\EasyPeasy.csproj" />
+    <ProjectReference Include="..\..\src\EasyPeasy.Extensions.DependencyInjection\EasyPeasy.Extensions.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\EasyPeasy.SourceGenerator\EasyPeasy.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>
