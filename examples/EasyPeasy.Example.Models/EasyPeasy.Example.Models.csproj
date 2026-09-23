@@ -1,13 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <AssemblyTitle>EasyPeasy.Example.Models</AssemblyTitle>
-    <Product>EasyPeasy.Example.Models</Product>
-    <Copyright>Copyright © 2015</Copyright>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
   </PropertyGroup>
+
 </Project>

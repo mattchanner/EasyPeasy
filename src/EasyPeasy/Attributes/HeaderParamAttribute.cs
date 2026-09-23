@@ -1,59 +1,18 @@
-﻿// ----------------------------------------------------------------------------
-// <copyright file="HeaderParamAttribute.cs">
-//
-//  The MIT License (MIT)
-//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the “Software”),
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included 
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
-//  THE SOFTWARE.
-// </copyright>
-// ----------------------------------------------------------------------------
+namespace EasyPeasy.Attributes;
 
-using System;
-
-namespace EasyPeasy.Attributes
+/// <summary>
+/// Binds a parameter to a request header. <see langword="null"/> values are omitted. Content headers such
+/// as <c>Content-Type</c> are applied to the request body.
+/// </summary>
+public sealed class HeaderParamAttribute : ParameterBindingAttribute
 {
-    /// <summary>
-    /// Represents a named query string parameter
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HeaderParamAttribute : Attribute
-    {
-        /// <summary> The header name. </summary>
-        private readonly string headerName;
+    /// <summary>Binds to the header with the same name as the parameter.</summary>
+    public HeaderParamAttribute() : base(null) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HeaderParamAttribute"/> class.
-        /// </summary>
-        /// <param name="headerName">
-        /// The header name.
-        /// </param>
-        public HeaderParamAttribute(string headerName)
-        {
-            this.headerName = headerName;
-        }
+    /// <summary>Binds to the named header.</summary>
+    /// <param name="name">The header name.</param>
+    public HeaderParamAttribute(string name) : base(name) { }
 
-        /// <summary>
-        /// Gets the header name.
-        /// </summary>
-        public string HeaderName
-        {
-            get { return this.headerName; }
-        }
-    }
+    /// <summary>Gets the header name (kept for compatibility with EasyPeasy 2.x).</summary>
+    public string? HeaderName => Name;
 }

@@ -1,0 +1,46 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Deterministic>true</Deterministic>
+    <IsPackable>false</IsPackable>
+
+    <Version>3.0.0</Version>
+    <Authors>Matt Channer</Authors>
+    <Company>Matt Channer</Company>
+    <Copyright>Copyright © Matt Channer 2013-2026</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mattchanner/EasyPeasy</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mattchanner/EasyPeasy</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>rest;http;httpclient;client;proxy;source-generator;jax-rs</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- CI builds get repo-relative paths in PDBs so SourceLink output is reproducible -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <!-- Libraries under src/ are NuGet packages, except the generator, which ships inside EasyPeasy. -->
+  <PropertyGroup>
+    <IsShippingPackage Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src' and '$(MSBuildProjectName)' != 'EasyPeasy.SourceGenerator'">true</IsShippingPackage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsShippingPackage)' == 'true'">
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsShippingPackage)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>

@@ -1,57 +1,35 @@
-// -----------------------------------------------------------------------
-// <copyright file="IMediaTypeHandler.cs">
-//
-//  The MIT License (MIT)
-//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-// </copyright>
-// -----------------------------------------------------------------------
+namespace EasyPeasy;
 
-using System;
-using System.IO;
-using EasyPeasy.Http;
-
-namespace EasyPeasy
+/// <summary>
+/// Converts between .NET objects and HTTP content for one or more media types.
+/// </summary>
+public interface IMediaTypeHandler
 {
-    /// <summary>
-    /// Implementations of this type are responsible for serializing and de-serializing data for
-    /// a given type
-    /// </summary>
-    public interface IMediaTypeHandler
-    {
-        /// <summary>
-        /// When called, this method is responsible for writing the value to the stream
-        /// </summary>
-        /// <param name="request">The HTTP request being written to </param>
-        /// <param name="value">The value to write</param>
-        /// <param name="body">The stream to write to</param>
-        void WriteObject(IHttpRequest request, object value, Stream body);
+    /// <summary>Creates the request content for <paramref name="value"/>.</summary>
+    /// <param name="value">The value to send.</param>
+    /// <param name="type">The declared type of the value.</param>
+    /// <param name="mediaType">The media type to send, used as the <c>Content-Type</c>.</param>
+    /// <returns>The content. It can serialize lazily when it is sent.</returns>
+    HttpContent Serialize(object? value, Type type, string mediaType);
 
-        /// <summary>
-        /// When called, this method is responsible for reading the contents of the body stream in order
-        /// to generate a response of the type appropriate for the defined media type.
-        /// </summary>
-        /// <param name="response"> The response being read from. </param>
-        /// <param name="body"> The stream to write to </param>
-        /// <param name="objectType"> The type to de-serialize.  </param>
-        /// <returns> The <see cref="object"/> read from the stream.   </returns>
-        object ReadObject(IHttpResponse response, Stream body, Type objectType);
-    }
+    /// <summary>Reads a value of <paramref name="type"/> from response content.</summary>
+    /// <param name="content">The response content.</param>
+    /// <param name="type">The type to read.</param>
+    /// <param name="cancellationToken">Cancels the read.</param>
+    /// <returns>The value that was read.</returns>
+    ValueTask<object?> DeserializeAsync(HttpContent content, Type type, CancellationToken cancellationToken);
+}
+
+/// <summary>
+/// A <see cref="IMediaTypeHandler"/> that can also read a sequence of items as they arrive,
+/// for methods that return <see cref="IAsyncEnumerable{T}"/>.
+/// </summary>
+public interface IStreamingMediaTypeHandler : IMediaTypeHandler
+{
+    /// <summary>Reads items from response content as they arrive.</summary>
+    /// <typeparam name="T">The item type.</typeparam>
+    /// <param name="content">The response content.</param>
+    /// <param name="cancellationToken">Cancels the read.</param>
+    /// <returns>The items.</returns>
+    IAsyncEnumerable<T?> DeserializeAsyncEnumerable<T>(HttpContent content, CancellationToken cancellationToken);
 }

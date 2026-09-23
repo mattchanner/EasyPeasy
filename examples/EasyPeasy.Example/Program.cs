@@ -1,129 +1,71 @@
-﻿// -----------------------------------------------------------------------------
-// <copyright file="Program.cs">
-// 
-//  The MIT License (MIT)
-//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the “Software”),
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included 
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
-//  THE SOFTWARE.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.ComponentModel.Composition.Hosting;
-
+using EasyPeasy;
 using EasyPeasy.Example;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace EasyPeasy;
+// Start EasyPeasy.Example.Server first; it listens on http://localhost:9000.
+var baseAddress = new Uri("http://localhost:9000");
 
-/// <summary> 
-/// An example client, showing how to use EasyPeasy to generate a usable client
-/// from a configured service interface.
-/// </summary>
-public class Program
+// Register the client with IHttpClientFactory. The builder it returns is a normal IHttpClientBuilder,
+// so handlers, resilience (retries, timeouts, circuit breaker) and telemetry are added in the usual way.
+var services = new ServiceCollection();
+services.AddTransient<LoggingHandler>();
+services
+    .AddEasyPeasyClient<IContactService>(baseAddress)
+    .AddHttpMessageHandler<LoggingHandler>()
+    .AddStandardResilienceHandler();
+
+await using var provider = services.BuildServiceProvider();
+var contacts = provider.GetRequiredService<IContactService>();
+
+// Without dependency injection, this does the same using a shared, pooled HttpClient:
+//   var contacts = EasyPeasyClient.Create<IContactService>(baseAddress);
+
+using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+var ct = cancellation.Token;
+
+// GET http://localhost:9000/api/contact
+Console.WriteLine("All contacts:");
+foreach (var contact in await contacts.GetContactsAsync(ct))
 {
-    public static async Task Main()
-    {
-        await new Program().RunExamples();
-        Console.ReadKey();
-    }
-
-    private async Task RunExamples()
-    {
-        // This is the based address of the server which gets passed into the 
-        // creation method
-        Uri baseAddress = new Uri("http://localhost:9000");
-
-        // The factory can be created using MEF, the following is an example of how
-        // you could do this:
-        AssemblyCatalog catalog = new AssemblyCatalog(typeof(IEasyPeasyFactory).Assembly);
-        CompositionContainer container = new CompositionContainer(catalog);
-
-        IEasyPeasyFactory factory = container.GetExportedValue<IEasyPeasyFactory>();
-
-        // Interceptors can be added to the factory to perform actions on the HTTP request and
-        // response objects.  This example simply logs out the events to the console
-        factory.AddInterceptor(new LoggingInterceptor());
-        
-        // An alternative would be the more direct way:
-        // IEasyPeasyFactory factory = new EasyPeasyFactory(new DefaultMediaTypeRegistry());
-
-        // Auto generate an implementation of the IContactService interface.
-        // The implementation is configured via the interface attributes to determine each
-        // methods end point, serialization formats etc.
-        IContactServiceAsync contactService = factory.Create<IContactServiceAsync>(baseAddress);
-        
-        // The following are examples of using the implementation
-
-        // 1 - fetch a list of contacts from the server and print them out
-        // This method call maps to:
-        // GET http://localhost:9000/api/contact
-        List<Contact> contacts = await contactService.GetContactsAsync();
-        foreach (var contact in contacts)
-        {
-            Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-        }
-
-        // Fetch a specific contact.  The value passed in here is used in the URL
-        // GET http://localhost:9000/api/contact/Contact1
-        Contact singleContact = await contactService.GetContactAsync("Contact1");
-        Console.WriteLine("Fetched contact by name, Name: {0}, Address: {1}", singleContact.Name, singleContact.Address);
-
-        singleContact.Address = "Changed Address";
-
-        Console.WriteLine("Updating address for contact1");
-
-        // Updates the contact on the server.  The supplied name is mapped to the URL,
-        // the contact is serialized to the body as XML based on the Produces attribute
-        await contactService.UpdateContactAsync(singleContact.Name, singleContact);
-
-        // Another example of updating the address for a contact. This example
-        // uses form encoded parameters to send the data:
-        //
-        // PUT   http://localhost:9000/api/contact/Contact3
-        // BODY: address=Updated_using_form_param
-        await contactService.UpdateContactAsync("Contact3", "Updated_using_form_param");
-
-        // Show the updates worked by reloading the data and printing the updated values
-        Console.WriteLine("Re-fetching contact list");
-        List<Contact> fetchedContacts = await contactService.GetContactsAsync();
-        foreach (Contact contact in fetchedContacts)
-        {
-            Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-        }
-
-        // Deletes a contact on the server using similar path mappings.
-        // The DELETE attribute determines the verb to use:
-        //
-        // DELETE http://localhost:9000/api/contact/Contact1
-        Console.WriteLine("Deleting contact 1");
-        await contactService.DeleteContactAsync("Contact1");
-
-        // Reload to show the contact has been deleted
-        Console.WriteLine("Re-fetching contact list");
-        fetchedContacts = await contactService.GetContactsAsync();
-        foreach (Contact contact in fetchedContacts)
-        {
-            Console.WriteLine("Name: {0}, Address: {1}", contact.Name, contact.Address);
-        }
-
-        Console.WriteLine("Done!");
-    }
+    Console.WriteLine($"  {contact.Name}: {contact.Address}");
 }
+
+// GET http://localhost:9000/api/contact/Contact1
+var first = await contacts.GetContactAsync("Contact1", ct);
+Console.WriteLine($"Fetched {first.Name}: {first.Address}");
+
+// PUT http://localhost:9000/api/contact/Contact1 with a JSON body
+first.Address = "Changed address";
+await contacts.UpdateContactAsync(first.Name, first, ct);
+
+// PUT http://localhost:9000/api/contact/Contact3/address with a form body: address=Updated_using_form_param
+await contacts.UpdateAddressAsync("Contact3", "Updated_using_form_param", ct);
+
+// POST http://localhost:9000/api/contact
+await contacts.CreateContactAsync(new Contact { Name = "Contact4", Address = "Address4" }, ct);
+
+// DELETE http://localhost:9000/api/contact/Contact2
+await contacts.DeleteContactAsync("Contact2", ct);
+
+// Stream the updated list: items are yielded while the response is still being read.
+Console.WriteLine("Contacts after the updates:");
+await foreach (var contact in contacts.StreamContactsAsync(ct))
+{
+    Console.WriteLine($"  {contact.Name}: {contact.Address}");
+}
+
+// Errors: ApiResponse<T> reports them without throwing...
+var missing = await contacts.TryGetContactAsync("Contact2", ct);
+Console.WriteLine($"Contact2 after delete: {(int)missing.StatusCode} {missing.StatusCode}");
+
+// ...and other methods throw ApiException, which keeps the status code and response body.
+try
+{
+    await contacts.GetContactAsync("Nobody", ct);
+}
+catch (ApiException ex)
+{
+    Console.WriteLine($"Expected failure: {(int)ex.StatusCode}, body: {ex.Content}");
+}
+
+Console.WriteLine("Done!");

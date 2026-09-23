@@ -1,73 +1,50 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="MediaType.cs">
-//
-//  The MIT License (MIT)
-//  Copyright © 2013 Matt Channer (mchanner at gmail dot com)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the “Software”),
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included 
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
-//  THE SOFTWARE.
-// </copyright>
-// ----------------------------------------------------------------------------
+namespace EasyPeasy;
 
-namespace EasyPeasy
+/// <summary>Common media type names.</summary>
+public static class MediaType
 {
-    /// <summary>
-    /// Represents various common media types
-    /// </summary>
-    public static class MediaType
-    {
-        /// <summary> Plain text media type </summary>
-        public const string TextPlain = "text/plain";
+    /// <summary><c>text/plain</c></summary>
+    public const string TextPlain = "text/plain";
 
-        /// <summary> HTML text media type </summary>
-        public const string TextHtml = "text/html";
+    /// <summary><c>text/html</c></summary>
+    public const string TextHtml = "text/html";
 
-        /// <summary> XML text media type </summary>
-        public const string TextXml = "text/xml";
+    /// <summary><c>text/xml</c></summary>
+    public const string TextXml = "text/xml";
 
-        /// <summary> Application XML media type </summary>
-        public const string ApplicationXml = "application/xml";
+    /// <summary><c>application/xml</c></summary>
+    public const string ApplicationXml = "application/xml";
 
-        /// <summary> Application JSON media type </summary>
-        public const string ApplicationJson = "application/json";
+    /// <summary><c>application/json</c></summary>
+    public const string ApplicationJson = "application/json";
 
-        /// <summary> PNG Image media type </summary>
-        public const string ImagePNG = "image/png";
+    /// <summary><c>application/problem+json</c></summary>
+    public const string ApplicationProblemJson = "application/problem+json";
 
-        /// <summary> GIF Image media type </summary>
-        public const string ImageGIF = "image/gif";
+    /// <summary><c>image/png</c></summary>
+    public const string ImagePNG = "image/png";
 
-        /// <summary> JPEG Image media type </summary>
-        public const string ImageJPG = "image/jpeg";
+    /// <summary><c>image/gif</c></summary>
+    public const string ImageGIF = "image/gif";
 
-        /// <summary> TIFF Image media type </summary>
-        public const string ImageTIFF = "image/tiff";
+    /// <summary><c>image/jpeg</c></summary>
+    public const string ImageJPG = "image/jpeg";
 
-        /// <summary> Bitmap Image media type </summary>
-        public const string ImageBMP = "image/bmp";
+    /// <summary><c>image/tiff</c></summary>
+    public const string ImageTIFF = "image/tiff";
 
-        /// <summary> Multipart form data </summary>
-        public const string MultipartFormData = "multipart/form-data";
+    /// <summary><c>image/bmp</c></summary>
+    public const string ImageBMP = "image/bmp";
 
-        /// <summary> The octet stream mime type </summary>
-        public const string ApplicationOctetStream = "application/octetstream";
+    /// <summary><c>image/webp</c></summary>
+    public const string ImageWebP = "image/webp";
 
-        /// <summary> The application/x-www-form-urlencoded media type</summary>
-        public const string ApplicationUrlEncoded = "application/x-www-form-urlencoded";
-    }
+    /// <summary><c>multipart/form-data</c></summary>
+    public const string MultipartFormData = "multipart/form-data";
+
+    /// <summary><c>application/octet-stream</c></summary>
+    public const string ApplicationOctetStream = "application/octet-stream";
+
+    /// <summary><c>application/x-www-form-urlencoded</c></summary>
+    public const string ApplicationUrlEncoded = "application/x-www-form-urlencoded";
 }

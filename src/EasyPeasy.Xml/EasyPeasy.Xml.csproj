@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsAotCompatible>true</IsAotCompatible>
+    <Description>XML (DataContractSerializer) support for EasyPeasy clients.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyPeasy\EasyPeasy.csproj" />
+  </ItemGroup>
+
+</Project>

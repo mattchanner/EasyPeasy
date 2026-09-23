@@ -1,40 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <IsPackable>false</IsPackable>
-    <AssemblyTitle>EasyPeasy.Tests</AssemblyTitle>
-    <Product>EasyPeasy.Client.Tests</Product>
-    <Copyright>Copyright © Matt Channer 2013</Copyright>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <!-- Test names use underscores; xunit test classes must be public. -->
+    <NoWarn>$(NoWarn);CA1707;CA1515;CA1034;CA2007;CA1861;CA2000</NoWarn>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
-    <PackageReference Include="SkiaSharp" Version="3.119.0" />
-    <PackageReference Include="System.Resources.Extensions" Version="9.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\lemon.jpg" />
-    <EmbeddedResource Include="Resources\homer.png" />
-    <EmbeddedResource Include="Resources\ned.png" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\EasyPeasy\EasyPeasy.csproj" />
+    <ProjectReference Include="..\..\src\EasyPeasy.Extensions.DependencyInjection\EasyPeasy.Extensions.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\EasyPeasy.Xml\EasyPeasy.Xml.csproj" />
+    <ProjectReference Include="..\..\src\EasyPeasy.SkiaSharp\EasyPeasy.SkiaSharp.csproj" />
+    <!-- Runs the generator over this project, as the NuGet package does for consumers. -->
+    <ProjectReference Include="..\..\src\EasyPeasy.SourceGenerator\EasyPeasy.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
 </Project>
